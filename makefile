@@ -1,4 +1,5 @@
 VIPACK = "~/tmp/vipack/build/vipack"
 
 all:
-			$(VIPACK) -p skprJson -P `pwd` -t `pwd`/depTree
+			$(VIPACK)  -t `pwd`/deptree -p manush -P `pwd`
+			#-p skprJson -P `pwd` -t `pwd`/depTree

@@ -6,7 +6,7 @@
   "Remote":
     {
     "type": "git",
-    "path": "http://http://git0.loc.illuriasecurity.com/noch/manush",
+    "path": "http://git0.loc.illuriasecurity.com/noch/manush",
     "tag" : "0.1"
     },
   "Dependencies":

@@ -1,6 +1,6 @@
 MODULE mnshStorage;
 
-IMPORT Files;
+IMPORT Files, strutils;
 
 PROCEDURE fileToString*(VAR fileName: ARRAY OF CHAR; VAR returnString: strutils.pstring);
 VAR
