@@ -1,0 +1,22 @@
+{
+  "Package": "manush",
+  "Author":  "noch",
+  "License": "unefinedyet",
+  "Version": "0.1",
+  "Remote":
+    {
+    "type": "git",
+    "path": "http://http://git0.loc.illuriasecurity.com/noch/manush",
+    "tag" : "0.1"
+    },
+  "Dependencies":
+  {
+    "skprJson": "0.1"
+  },
+  "Build":
+  {
+     "voc -s": "src/mnshDefs.Mod",
+     "voc -s": "src/mnshStorage.Mod",
+     "voc -m": "src/manush.Mod",
+  }
+}
