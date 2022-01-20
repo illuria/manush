@@ -1,4 +1,4 @@
-VIPACK = "~/tmp/vipack/build/vipack"
+VIPACK = "/opt/voc/bin/vipack"
 
 all:
 			$(VIPACK)  -t `pwd`/deptree -p manush -P `pwd`
