@@ -1,20 +1,22 @@
 MODULE manush;
 
 IMPORT Out, Strings, 
-       skprJson, strutils,
+       skprJson, strutils, StringList,
        mnshStorage, mnshDefs;
 
 PROCEDURE processConfig(cnf: ARRAY OF CHAR);
 VAR
-  json, cmds, cmd0: skprJson.JsonTypePointer;
+  json, cmds : skprJson.JsonTypePointer;
   pstring: strutils.pstring;
+  cmdList, keys, values: StringList.TStringList;
 BEGIN
   mnshStorage.fileToString(mnshDefs.iniFile, pstring);
   IF pstring # NIL THEN
     json := skprJson.Create(pstring^);
     cmds := json.GetNonTerminal(json, mnshDefs.cmds);
     IF cmds # NIL THEN
-      Out.String("commands found"); Out.Ln;
+      cmds.GetTerminalKeys(cmds, cmdList);
+      StringList.list(cmdList);
     ELSE
       Out.String("config file does not contain '"); Out.String(mnshDefs.cmds); Out.String("' section!"); Out.Ln; Out.String("quitting..."); Out.Ln; HALT(2);
     END;
