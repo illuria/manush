@@ -4,7 +4,7 @@ IMPORT Out, Strings,
        skprJson, strutils,
        mnshStorage, mnshDefs;
 
-PROCEDURE processConfig(VAR: cnf: ARRAY OF CHAR);
+PROCEDURE processConfig(VAR cnf: ARRAY OF CHAR);
 VAR
   json, cmds, cmd0: skprJson.JsonTypePointer;
   pstring: strutils.pstring;
