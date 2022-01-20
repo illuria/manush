@@ -1,0 +1,4 @@
+
+
+all:
+			cd build && voc -s ../src/mnshDefs.Mod ../src/mnshStorage.Mod ../src/manush.Mod -m
