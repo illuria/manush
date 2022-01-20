@@ -1,0 +1,21 @@
+{
+  "Package": "lists",
+  "Author":  "noch",
+  "License": "GPL-3",
+  "Version": "0.1",
+  "Remote":
+    {
+    "type": "git",
+    "path": "https://github.com/norayr/lists",
+    "tag" : "0.1"
+    },
+  "Build":
+    {
+     "voc -s": "src/lDefs.Mod",
+     "voc -s": "src/strutils.Mod",
+     "voc -s": "src/List.Mod",
+     "voc -s": "src/StringList.Mod",
+     "voc -m": "tst/TestList.Mod",
+     "voc -m": "tst/TestStrutils.Mod"
+    }
+}

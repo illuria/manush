@@ -1,0 +1,22 @@
+{
+  "Package": "skprJson",
+  "Author":  "shekspir55",
+  "License": "GPL-3",
+  "Version": "0.1",
+  "Remote":
+    {
+    "type": "git",
+    "path": "https://github.com/norayr/skprJson",
+    "tag" : "0.1"
+    },
+  "Dependencies":
+  {
+    "lists": "0.1"
+    "skprLogger": "0.1"
+  },
+  "Build":
+  {
+     "voc -s": "src/skprCharStack.Mod",
+     "voc -s": "src/skprJson.Mod"
+  }
+}
