@@ -1,4 +1,9 @@
 
 
 all:
-			cd build && voc -s ../src/mnshDefs.Mod ../src/mnshStorage.Mod ../src/manush.Mod -m
+			cd build && voc -s ../deps/lists/src/lDefs.Mod ../deps/lists/src/List.Mod ../deps/lists/src/StringList.Mod 
+			cd build && voc -s ../deps/lists/src/strutils.Mod
+			cd build && voc -s ../deps/time/src/time.Mod
+			cd build && voc -s ../deps/skprLogger/src/skprLogger.Mod
+			cd build && voc -s ../deps/skprJson/src/skprCharStack.Mod ../deps/skprJson/src/skprJson.Mod
+			cd build && voc -s ../src/mnshDefs.Mod ../src/mnshStorage.Mod ../src/mnshList.Mod ../src/manush.Mod -m
