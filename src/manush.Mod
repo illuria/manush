@@ -29,7 +29,8 @@ i := 0;
     END;
     INC(i);
   UNTIL i = keys.Count - 1;
-  ml.appendNode(ml, name^, exec^, comment^);
+  (*ml.appendNode(ml, name^, exec^, comment^);*)
+  ml.appendNodeByPointers(ml, name, exec, comment);
 END AssignValues;
 
 PROCEDURE json2tree(cnf: ARRAY OF CHAR): mnshList.mList;
@@ -79,7 +80,7 @@ VAR
   jsonRecord, item: skprJson.JsonTypePointer;
   keys, values: StringList.TStringList;
   b: BOOLEAN;
-  name : strutils.pstring;
+  name : StringList.pstring;
 BEGIN
   b := FALSE;
   p := NIL;
@@ -108,7 +109,7 @@ END smth;
 PROCEDURE showMenu*(VAR ml: mnshList.mList);
 VAR
   i: LONGINT;
-  p: strutils.pstring;
+  p: StringList.pstring;
 BEGIN
   Out.String("********* manush friendly menu *********");
   i := 0;

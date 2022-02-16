@@ -1,6 +1,6 @@
 MODULE mnshList;
 
-IMPORT Out, Strings, List, lDefs, strutils;
+IMPORT Out, Strings, List, lDefs, strutils, StringList;
 
 CONST
   nameField* = "name";
@@ -10,17 +10,18 @@ CONST
 TYPE
   mNode* = POINTER TO mNodeDesc;
   mNodeDesc = RECORD(lDefs.TObjectDesc)
-       name, exec, comment : strutils.pstring;
+       name, exec, comment : StringList.pstring;
   END;
 
   mList* = POINTER TO mListDesc;
   mListDesc = RECORD (List.TListDesc)
     addNode* : PROCEDURE (VAR l: mList; VAR name, exec, comment: ARRAY OF CHAR): LONGINT;
     appendNode*: PROCEDURE (VAR l: mList; VAR name, exec, comment: ARRAY OF CHAR);
-    getName*:  PROCEDURE(VAR l: mList; i: LONGINT): strutils.pstring;
-    getCommand*:  PROCEDURE(VAR l: mList; i: LONGINT): strutils.pstring;
-    getComment*:  PROCEDURE(VAR l: mList; i: LONGINT): strutils.pstring;
-  END;
+    appendNodeByPointers*: PROCEDURE (VAR l: mList; VAR name, exec, comment: StringList.pstring);
+  getName*:  PROCEDURE(VAR l: mList; i: LONGINT): StringList.pstring;
+    getCommand*:  PROCEDURE(VAR l: mList; i: LONGINT): StringList.pstring;
+    getComment*:  PROCEDURE(VAR l: mList; i: LONGINT): StringList.pstring;
+    END;
 
   PROCEDURE addNode*(VAR l: mList; VAR name, exec, comment: ARRAY OF CHAR): LONGINT;
   VAR
@@ -52,7 +53,7 @@ TYPE
     List.Append(l, mn);
   END appendNode;
 
-  PROCEDURE appendNodeByPointers*(VAR l: mList; VAR name, exec, comment: strutils.pstring);
+  PROCEDURE appendNodeByPointers*(VAR l: mList; VAR name, exec, comment: StringList.pstring);
   VAR
     mn: mNode;
   BEGIN
@@ -63,30 +64,30 @@ TYPE
     List.Append(l, mn);
   END appendNodeByPointers;
 
-  PROCEDURE getName*(VAR l: mList; i: LONGINT): strutils.pstring;
+  PROCEDURE getName*(VAR l: mList; i: LONGINT): StringList.pstring;
   VAR
     e: List.Node;
-    p: strutils.pstring;
+    p: StringList.pstring;
   BEGIN
     e := List.Get(l, i);
     p := e.obj(mNode).name;
     RETURN p;
   END getName;
 
-  PROCEDURE getCommand*(VAR l: mList; i: LONGINT): strutils.pstring;
+  PROCEDURE getCommand*(VAR l: mList; i: LONGINT): StringList.pstring;
   VAR
     e: List.Node;
-    p: strutils.pstring;
+    p: StringList.pstring;
   BEGIN
     e := List.Get(l, i);
     p := e.obj(mNode).exec;
     RETURN p;
   END getCommand;
 
-  PROCEDURE getComment*(VAR l: mList; i: LONGINT): strutils.pstring;
+  PROCEDURE getComment*(VAR l: mList; i: LONGINT): StringList.pstring;
   VAR
     e: List.Node;
-    p: strutils.pstring;
+    p: StringList.pstring;
   BEGIN
     e := List.Get(l, i);
     p := e.obj(mNode).comment;
@@ -100,6 +101,7 @@ TYPE
     NEW(m);
     m.addNode := addNode;
     m.appendNode := appendNode;
+    m.appendNodeByPointers := appendNodeByPointers;
     m.getName := getName;
     m.getCommand := getCommand;
     m.getComment := getComment;
