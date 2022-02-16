@@ -4,19 +4,43 @@ IMPORT Out, Strings,
        skprJson, strutils, StringList,
        mnshStorage, mnshDefs, mnshList;
 
+PROCEDURE AssignValues(VAR keys, values: StringList.TStringList; VAR ml: mnshList.mList);
+VAR
+  ek, ev: StringList.Node;
+  i: INTEGER;
+  VAR name, exec, comment: StringList.pstring;
+BEGIN
+i := 0;
+  REPEAT
+    ek := keys.Get(keys, i);
+    ev := values.Get(values, i);
+    IF Strings.Match(ek.obj(StringList.TString).str^, mnshList.nameField) THEN
+      (*name := ev.obj(StringList.TString).str*)
+      name := values.GetString(values, i);
+    Out.Int(i, 0); Out.String(" found name: "); Out.String(name^); Out.Ln;
+    END;
+    IF Strings.Match(ek.obj(StringList.TString).str^, mnshList.execField) THEN
+      exec := ev.obj(StringList.TString).str;
+    Out.Int(i, 0); Out.String(" found command: "); Out.String(exec^); Out.Ln;
+    END;
+    IF Strings.Match(ek.obj(StringList.TString).str^, mnshList.cmntField) THEN
+      comment := ev.obj(StringList.TString).str;
+    Out.Int(i, 0); Out.String(" found comment: "); Out.String(comment^); Out.Ln;
+    END;
+    INC(i);
+  UNTIL i = keys.Count - 1;
+  ml.appendNode(ml, name^, exec^, comment^);
+END AssignValues;
+
 PROCEDURE json2tree(cnf: ARRAY OF CHAR): mnshList.mList;
 VAR
   json, item : skprJson.JsonTypePointer;
   p: strutils.pstring;
   keys, values: StringList.TStringList;
-  lst: mnshList.mList;
   strs: POINTER TO ARRAY OF skprJson.TString;
   ml: mnshList.mList;
   i: LONGINT;
-  (*tmp?*)
-  str0, str1: ARRAY 16 OF CHAR;
 BEGIN
-  COPY("", str0); COPY("", str1);
   ml := mnshList.create();
   p := NIL;
   mnshStorage.fileToString(mnshDefs.iniFile, p);
@@ -30,19 +54,19 @@ BEGIN
     REPEAT
       Out.String("strs["); Out.Int(i, 0); Out.String("]=");
       Out.String(strs[i]); Out.Ln;
-      ml.appendNode(ml, strs[i], str0, str1);
+      item := json.GetNonTerminal(json, strs[i]);
+      IF item # NIL THEN
+        keys := NIL; values := NIL;
+        item.GetTerminalKeys(item, keys);
+        item.GetTerminalValues(item, values);
+        AssignValues(keys, values, ml);
+      ELSE
+        Out.String("we know there should be section ");
+        Out.String(strs[0]); Out.String("... this is strange"); Out.Ln;
+        HALT(1);
+      END;
       INC(i)
     UNTIL i = json.NonTerminalNumber;
-    (*  item := json.GetNonTerminal(json, strs[0]);
-      IF item # NIL THEN
-        item.GetTerminalKeys(item, keys);
-        Out.String("*------");Out.Ln;
-        StringList.list(keys);
-        Out.String("------*");Out.Ln;
-        item.GetTerminalValues(item, values);
-      ELSE
-        Out.String("this cannot happen. memory corruption?"); Out.Ln;
-      END;*)
   ELSE
     Out.String("config file "); Out.String(mnshDefs.iniFile); Out.String(" not found!"); Out.Ln; Out.String("quitting..."); Out.Ln; HALT(1);
   END;
@@ -81,13 +105,33 @@ BEGIN
   END
 END smth;
 
+PROCEDURE showMenu*(VAR ml: mnshList.mList);
+VAR
+  i: LONGINT;
+  p: strutils.pstring;
+BEGIN
+  Out.String("********* manush friendly menu *********");
+  i := 0;
+  REPEAT
+    Out.Int(i, 0); Out.Ln;
+    p := mnshList.getName(ml, i);
+    Out.String(p^); Out.Ln;
+    p := mnshList.getCommand(ml, i);
+    Out.String(p^); Out.Ln;
+    p := mnshList.getComment(ml, i);
+    Out.String(p^); Out.Ln;
+    INC(i);
+  UNTIL i = ml.Count;
+END showMenu;
+
 
 PROCEDURE main;
 VAR
  ml: mnshList.mList;
 BEGIN
   ml := json2tree(mnshDefs.iniFile);
-  smth(mnshDefs.iniFile, ml);
+  (*smth(mnshDefs.iniFile, ml);*)
+  showMenu(ml);
 END main;
 
 BEGIN
