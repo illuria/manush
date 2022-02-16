@@ -1,6 +1,6 @@
 MODULE manush;
 
-IMPORT Out, Strings, 
+IMPORT Out, Strings, oocIntStr, ulmIO,
        skprJson, strutils, StringList,
        mnshStorage, mnshDefs, mnshList;
 
@@ -111,7 +111,7 @@ VAR
   i: LONGINT;
   p: StringList.pstring;
 BEGIN
-  Out.String("********* manush friendly menu *********");
+  Out.String("********* manush friendly menu *********"); Out.Ln;
   i := 0;
   REPEAT
     Out.Int(i, 0); Out.Ln;
@@ -129,10 +129,20 @@ END showMenu;
 PROCEDURE main;
 VAR
  ml: mnshList.mList;
+ choice: ARRAY 8 OF CHAR;
+ ci: LONGINT; res: oocIntStr.ConvResults;
 BEGIN
   ml := json2tree(mnshDefs.iniFile);
   (*smth(mnshDefs.iniFile, ml);*)
   showMenu(ml);
+  REPEAT
+    ulmIO.ReadLine(choice);
+    oocIntStr.StrToInt(choice, ci, res);
+    IF res # oocIntStr.strAllRight THEN
+      Out.String("enter correct number"); Out.Ln;
+    END;
+  UNTIL res = oocIntStr.strAllRight;
+
 END main;
 
 BEGIN
