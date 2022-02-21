@@ -1,8 +1,17 @@
 MODULE manush;
 
-IMPORT Out, Strings, oocIntStr, ulmIO,
+IMPORT Out, Strings, oocIntStr, ulmIO, crt, Platform,
        skprJson, strutils, StringList,
        mnshStorage, mnshDefs, mnshList;
+
+CONST
+  initX = 3;
+  initY = 5;
+  offsetX0 = 0;
+  offsetX = 6;
+  offsetX2 = 6;
+  offsetX3 = 20;
+  offsetX4 = 29;
 
 PROCEDURE AssignValues(VAR keys, values: StringList.TStringList; VAR ml: mnshList.mList);
 VAR
@@ -106,7 +115,7 @@ BEGIN
   END
 END smth;
 
-PROCEDURE showMenu*(VAR ml: mnshList.mList);
+PROCEDURE showMenuOld*(VAR ml: mnshList.mList);
 VAR
   i: LONGINT;
   p: StringList.pstring;
@@ -123,26 +132,107 @@ BEGIN
     Out.String(p^); Out.Ln;
     INC(i);
   UNTIL i = ml.Count;
-END showMenu;
+END showMenuOld; (* incomplete *)
+
+PROCEDURE exec(VAR cmd: StringList.pstring);
+VAR
+  s: ARRAY 3 OF CHAR;
+  i: INTEGER;
+BEGIN
+  i := Platform.System(cmd^);
+  Out.String("exit code of the program: "); Out.Int(i, 0); Out.Ln;
+  Out.Ln; Out.String("press ENTER to continue"); 
+  ulmIO.ReadLine(s);
+END exec;
+
+PROCEDURE drawMenu(VAR ml: mnshList.mList): INTEGER;
+VAR
+  i: LONGINT;
+  pname, pcmd, pcmnt: StringList.pstring;
+  x, y, xofquest, yofquest: INTEGER;
+BEGIN
+    x := initX; y := initY;
+    crt.ClrScr; crt.cursoroff;
+    crt.GotoXY(x,0);
+    crt.TextColor(crt.Green);
+    Out.Ln; Out.Ln;
+    Out.String("************ ");
+    crt.TextColor(crt.LightMagenta); Out.String("manush friendly menu");
+    crt.TextColor(crt.Green); Out.String(" ************"); 
+    i := 0;
+    REPEAT
+      crt.GotoXY(3, y); 
+      crt.TextColor(crt.Blue);
+      Out.Int(i, 0); Out.Char(':'); 
+
+      pname := mnshList.getName(ml, i);
+
+      crt.GotoXY(offsetX, y); crt.TextColor(crt.Yellow);
+      Out.String(pname^); 
+
+      pcmd := mnshList.getCommand(ml, i);
+
+      INC(y, 2); crt.GotoXY(offsetX2, y);
+      crt.TextBackground(crt.DarkGray); crt.TextColor(crt.Green);
+      Out.String(pcmd^);
+
+      pcmnt := mnshList.getComment(ml, i);
+
+      crt.GotoXY(offsetX3, y);
+      crt.TextBackground(crt.Black); crt.TextColor(crt.Blue);
+      Out.String(pcmnt^);
+      INC(y); 
+      INC(i); IF i # ml.Count THEN INC(y) END;
+    UNTIL i = ml.Count;
+    
+    INC(y); yofquest := y;
+    crt.GotoXY(initX, yofquest); crt.TextColor(crt.Yellow);
+    Out.String("enter number:");
+
+    INC(y); INC(y);
+    crt.GotoXY(offsetX0, y); crt.TextColor(crt.Green);
+    Out.String("**********************************************");
+    Out.Ln; Out.Ln;
+    crt.TextColor(crt.Blue);
+    crt.cursoron;
+  RETURN yofquest;
+END drawMenu;
+
+
+PROCEDURE menu*(VAR ml: mnshList.mList);
+VAR
+  yofquest: INTEGER;
+  choice: ARRAY 8 OF CHAR;
+  ci: LONGINT; res: oocIntStr.ConvResults;
+  pcmd: StringList.pstring;
+BEGIN
+  WHILE TRUE DO
+    yofquest := drawMenu(ml);
+    crt.GotoXY(initX, yofquest); crt.TextColor(crt.Yellow);
+    Out.String("enter number:");
+    REPEAT
+      crt.GotoXY(offsetX4, yofquest - 1);
+      ulmIO.ReadLine(choice);
+      oocIntStr.StrToInt(choice, ci, res);
+      IF (res # oocIntStr.strAllRight) OR (ci > ml.Count - 1) THEN
+        crt.GotoXY(0, yofquest); crt.TextColor(crt.Red);
+        Out.String("wrong number.. "); crt.TextColor(crt.Yellow);
+        Out.String("enter number:"); Out.Ln;
+      END;
+    UNTIL (res = oocIntStr.strAllRight) & (ci <= ml.Count -1);
+    pcmd := mnshList.getCommand(ml, ci);
+    exec(pcmd);
+  END  
+END menu;
 
 
 PROCEDURE main;
 VAR
  ml: mnshList.mList;
- choice: ARRAY 8 OF CHAR;
- ci: LONGINT; res: oocIntStr.ConvResults;
 BEGIN
   ml := json2tree(mnshDefs.iniFile);
   (*smth(mnshDefs.iniFile, ml);*)
-  showMenu(ml);
-  REPEAT
-    ulmIO.ReadLine(choice);
-    oocIntStr.StrToInt(choice, ci, res);
-    IF res # oocIntStr.strAllRight THEN
-      Out.String("enter correct number"); Out.Ln;
-    END;
-  UNTIL res = oocIntStr.strAllRight;
-
+  menu(ml);
 END main;
 
 BEGIN
