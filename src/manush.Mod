@@ -42,6 +42,16 @@ i := 0;
   ml.appendNodeByPointers(ml, name, exec, comment);
 END AssignValues;
 
+PROCEDURE assignZeroOption(VAR ml: mnshList.mList);
+VAR
+  name, command, comment: StringList.pstring;
+BEGIN
+  StringList.pstringFromString("Exit", name);
+  StringList.pstringFromString("(internal)", command);
+  StringList.pstringFromString("exit this menu", comment);
+  ml.appendNodeByPointers(ml, name, command, comment);
+END assignZeroOption;
+
 PROCEDURE json2tree(VAR cnf: ARRAY OF CHAR): mnshList.mList;
 VAR
   json, item : skprJson.JsonTypePointer;
@@ -52,6 +62,7 @@ VAR
   i: LONGINT;
 BEGIN
   ml := mnshList.create();
+  assignZeroOption(ml);
   p := NIL;
   mnshStorage.fileToString(cnf, p);
   IF p # NIL THEN
@@ -206,7 +217,7 @@ VAR
   ci: LONGINT; res: oocIntStr.ConvResults;
   pcmd: StringList.pstring;
 BEGIN
-  WHILE TRUE DO
+  REPEAT
     yofquest := drawMenu(ml);
     crt.GotoXY(initX, yofquest); crt.TextColor(crt.Yellow);
     Out.String("enter number:");
@@ -221,8 +232,8 @@ BEGIN
       END;
     UNTIL (res = oocIntStr.strAllRight) & (ci <= ml.Count -1);
     pcmd := mnshList.getCommand(ml, ci);
-    exec(pcmd);
-  END  
+    IF ci # 0 THEN exec(pcmd) END
+  UNTIL ci = 0;
 END menu;
 
 PROCEDURE showHelp;
@@ -235,6 +246,7 @@ BEGIN
   Out.String("  manush config.json"); Out.Ln;
   Out.Ln;
 END showHelp;
+
 
 PROCEDURE main;
 VAR
