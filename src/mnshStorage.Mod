@@ -25,7 +25,6 @@ BEGIN
       Out.String(" not found");
       Out.Ln;
     END;
-
 END fileToString;
 
 END mnshStorage.

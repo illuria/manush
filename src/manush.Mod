@@ -1,6 +1,6 @@
 MODULE manush;
 
-IMPORT Out, Strings, oocIntStr, ulmIO, crt, Platform,
+IMPORT Out, Strings, oocIntStr, ulmIO, crt, Platform, Args,
        skprJson, strutils, StringList,
        mnshStorage, mnshDefs, mnshList;
 
@@ -42,7 +42,7 @@ i := 0;
   ml.appendNodeByPointers(ml, name, exec, comment);
 END AssignValues;
 
-PROCEDURE json2tree(cnf: ARRAY OF CHAR): mnshList.mList;
+PROCEDURE json2tree(VAR cnf: ARRAY OF CHAR): mnshList.mList;
 VAR
   json, item : skprJson.JsonTypePointer;
   p: strutils.pstring;
@@ -53,7 +53,7 @@ VAR
 BEGIN
   ml := mnshList.create();
   p := NIL;
-  mnshStorage.fileToString(mnshDefs.iniFile, p);
+  mnshStorage.fileToString(cnf, p);
   IF p # NIL THEN
     json := skprJson.Create(p^);
     Out.String("json terminal number "); Out.Int(json.TerminalNumber, 0); Out.Ln;
@@ -78,7 +78,7 @@ BEGIN
       INC(i)
     UNTIL i = json.NonTerminalNumber;
   ELSE
-    Out.String("config file "); Out.String(mnshDefs.iniFile); Out.String(" not found!"); Out.Ln; Out.String("quitting..."); Out.Ln; HALT(1);
+    Out.String("config file "); Out.String(cnf); Out.String(" not found!"); Out.Ln; Out.String("quitting..."); Out.Ln; HALT(1);
   END;
   RETURN ml;
 END json2tree;
@@ -225,14 +225,30 @@ BEGIN
   END  
 END menu;
 
+PROCEDURE showHelp;
+BEGIN
+  Out.String("manush friendly shell"); Out.Ln; Out.Ln;
+  Out.String("expects exactly one commandline argument,"); Out.Ln;
+  Out.String("which contains menu description in json format"); Out.Ln;
+  Out.Ln;
+  Out.String("usage:"); Out.Ln;
+  Out.String("  manush config.json"); Out.Ln;
+  Out.Ln;
+END showHelp;
 
 PROCEDURE main;
 VAR
  ml: mnshList.mList;
+ json: ARRAY 128 OF CHAR;
 BEGIN
-  ml := json2tree(mnshDefs.iniFile);
-  (*smth(mnshDefs.iniFile, ml);*)
-  menu(ml);
+  IF Args.argc # 2 THEN
+    showHelp;
+  ELSE
+    (*ml := json2tree(mnshDefs.iniFile);*)
+    Args.Get(1, json);
+    ml := json2tree(json);
+    menu(ml)
+  END
 END main;
 
 BEGIN
