@@ -150,9 +150,15 @@ VAR
   s: ARRAY 3 OF CHAR;
   i: INTEGER;
 BEGIN
+  crt.ClrScr;
+  crt.GotoXY(initX, 0);
   i := Platform.System(cmd^);
+  ulmIO.ReadLine(s);
+  crt.ClrScr;
+  crt.GotoXY(initX, initY);
   Out.String("exit code of the program: "); Out.Int(i, 0); Out.Ln;
   Out.Ln; Out.String("press ENTER to continue"); 
+  Out.Ln;
   ulmIO.ReadLine(s);
 END exec;
 
