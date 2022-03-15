@@ -17,6 +17,8 @@
   {
      "voc -s": "src/mnshDefs.Mod",
      "voc -s": "src/mnshStorage.Mod",
-     "voc -m": "src/manush.Mod",
+     "voc -s": "src/tmp_fix/mnshIntConv.Mod",
+     "voc -s": "src/tmp_fix/mnshStrInt.Mod",
+     "voc -m": "src/manush.Mod"
   }
 }

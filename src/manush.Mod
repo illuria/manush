@@ -1,6 +1,8 @@
 MODULE manush;
 
-IMPORT Out, Strings, oocIntStr, ulmIO, crt, Platform, Args,
+IMPORT Out, Strings, (*IntStr := oocIntStr,*) IntStr := mnshIntStr,
+       crt, Platform, Args,
+       IO := ulmIO,
        skprJson, strutils, StringList,
        mnshStorage, mnshDefs, mnshList;
 
@@ -153,13 +155,13 @@ BEGIN
   crt.ClrScr;
   crt.GotoXY(initX, 0);
   i := Platform.System(cmd^);
-  ulmIO.ReadLine(s);
+  IO.ReadLine(s);
   crt.ClrScr;
   crt.GotoXY(initX, initY);
   Out.String("exit code of the program: "); Out.Int(i, 0); Out.Ln;
   Out.Ln; Out.String("press ENTER to continue"); 
   Out.Ln;
-  ulmIO.ReadLine(s);
+  IO.ReadLine(s);
 END exec;
 
 PROCEDURE drawMenu(VAR ml: mnshList.mList): INTEGER;
@@ -220,7 +222,7 @@ PROCEDURE menu*(VAR ml: mnshList.mList);
 VAR
   yofquest: INTEGER;
   choice: ARRAY 8 OF CHAR;
-  ci: LONGINT; res: oocIntStr.ConvResults;
+  ci: LONGINT; res: IntStr.ConvResults;
   pcmd: StringList.pstring;
 BEGIN
   REPEAT
@@ -229,14 +231,14 @@ BEGIN
     Out.String("enter number:");
     REPEAT
       crt.GotoXY(offsetX4, yofquest - 1);
-      ulmIO.ReadLine(choice);
-      oocIntStr.StrToInt(choice, ci, res);
-      IF (res # oocIntStr.strAllRight) OR (ci > ml.Count - 1) THEN
+      IO.ReadLine(choice);
+      IntStr.StrToInt(choice, ci, res);
+      IF (res # IntStr.strAllRight) OR (ci > ml.Count - 1) THEN
         crt.GotoXY(0, yofquest); crt.TextColor(crt.Red);
         Out.String("wrong number.. "); crt.TextColor(crt.Yellow);
         Out.String("enter number:"); Out.Ln;
       END;
-    UNTIL (res = oocIntStr.strAllRight) & (ci <= ml.Count -1);
+    UNTIL (res = IntStr.strAllRight) & (ci <= ml.Count -1);
     pcmd := mnshList.getCommand(ml, ci);
     IF ci # 0 THEN exec(pcmd) END
   UNTIL ci = 0;
