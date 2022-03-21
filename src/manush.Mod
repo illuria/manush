@@ -153,8 +153,11 @@ VAR
   i: INTEGER;
 BEGIN
   crt.ClrScr;
-  crt.GotoXY(initX, 0);
+  crt.cursoroff;
+  crt.GotoXY(initX, initY);
+  Out.Ln;
   i := Platform.System(cmd^);
+  crt.cursoron;
   IO.ReadLine(s);
   crt.ClrScr;
   crt.GotoXY(initX, initY);
@@ -204,19 +207,25 @@ BEGIN
       INC(i); IF i # ml.Count THEN INC(y) END;
     UNTIL i = ml.Count;
     
-    INC(y); yofquest := y;
+    (*INC(y); yofquest := y;
     crt.GotoXY(initX, yofquest); crt.TextColor(crt.Yellow);
-    Out.String("enter number:");
+    Out.String("enter number:");*)
 
     INC(y); INC(y);
     crt.GotoXY(offsetX0, y); crt.TextColor(crt.Green);
     Out.String("**********************************************");
     Out.Ln; Out.Ln;
+    
+    INC(y); yofquest := y;
+    crt.GotoXY(initX, yofquest); crt.TextColor(crt.Yellow);
+    Out.String("enter number:");
+
     crt.TextColor(crt.Blue);
     crt.cursoron;
+
+    yofquest := y;
   RETURN yofquest;
 END drawMenu;
-
 
 PROCEDURE menu*(VAR ml: mnshList.mList);
 VAR
@@ -227,10 +236,13 @@ VAR
 BEGIN
   REPEAT
     yofquest := drawMenu(ml);
-    crt.GotoXY(initX, yofquest); crt.TextColor(crt.Yellow);
+    (*crt.GotoXY(initX, yofquest); crt.TextColor(crt.Yellow);*)
+    crt.GotoXY(0, yofquest); crt.TextColor(crt.Yellow);
+    Out.Ln; 
     Out.String("enter number:");
     REPEAT
-      crt.GotoXY(offsetX4, yofquest - 1);
+      (*crt.GotoXY(offsetX4, yofquest);*)
+      crt.GotoXY(0, yofquest);
       IO.ReadLine(choice);
       IntStr.StrToInt(choice, ci, res);
       IF (res # IntStr.strAllRight) OR (ci > ml.Count - 1) THEN
