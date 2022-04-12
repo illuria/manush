@@ -1,6 +1,6 @@
 MODULE manush;
 
-IMPORT Out, Strings, (*IntStr := oocIntStr,*) IntStr := mnshIntStr,
+IMPORT Out, Strings, IntStr := oocIntStr,
        crt, Platform, Args,
        IO := ulmIO,
        skprJson, strutils, StringList,
