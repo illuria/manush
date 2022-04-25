@@ -70,4 +70,6 @@ second way to build manush is by using the supplied makefile.
 configuration
 =============
 
+we also have a runtime dependency: `jq` must be installed to validate json.
+
 `manush.json` in the template directory is the example configuration file and describes the menu and actions presented by manush.
