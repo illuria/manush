@@ -27,4 +27,12 @@ BEGIN
     END;
 END fileToString;
 
+PROCEDURE exists*(VAR path: ARRAY OF CHAR): BOOLEAN;
+VAR
+  F: Files.File;
+BEGIN
+  F := Files.Old(path);
+  IF F = NIL THEN RETURN FALSE ELSE RETURN TRUE END
+END exists;
+
 END mnshStorage.

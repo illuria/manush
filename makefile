@@ -22,7 +22,7 @@ build_deps:
 			gmake -f $(mkfile_dir_path)/dps/skprLogger/makefile BUILD=$(build_dir_path)
 			gmake -f $(mkfile_dir_path)/dps/skprJson/makefile BUILD=$(build_dir_path)
 			cd $(build_dir_path) && \
-			voc -s ../src/mnshList.Mod ../src/mnshDefs.Mod ../src/mnshStorage.Mod ../src/manush.Mod -m
+			voc -s ../src/mnshList.Mod ../src/mnshDefs.Mod ../src/mnshStorage.Mod ../src/mnshExtTools.Mod ../src/manush.Mod -m
 
 
 clean:

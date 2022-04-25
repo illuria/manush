@@ -1,4 +1,6 @@
-MODULE mnshList;
+MODULE mnshList; (* noch 2022-01 / 2022-02-17  list to keep menu options *)
+
+
 
 IMPORT Out, Strings, List, lDefs, strutils, StringList;
 

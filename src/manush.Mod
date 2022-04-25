@@ -4,9 +4,10 @@ IMPORT Out, Strings, IntStr := oocIntStr,
        crt, Platform, Args,
        IO := ulmIO,
        skprJson, strutils, StringList,
-       mnshStorage, mnshDefs, mnshList;
+       mnshStorage, mnshDefs, mnshList, mnshExtTools;
 
 CONST
+  defConf = "/usr/local/etc/manush.json";
   initX = 3;
   initY = 5;
   offsetX0 = 0;
@@ -265,22 +266,48 @@ BEGIN
   Out.String("usage:"); Out.Ln;
   Out.String("  manush config.json"); Out.Ln;
   Out.Ln;
+  Out.String("if no configuration file provided, ");
+  Out.String(defConf); Out.String(" will be used."); Out.Ln;
+  Out.Ln;
 END showHelp;
 
 
 PROCEDURE main;
 VAR
  ml: mnshList.mList;
- json: ARRAY 128 OF CHAR;
+ json: ARRAY 512 OF CHAR;
+ st: INTEGER;
 BEGIN
-  IF Args.argc # 2 THEN
+  IF Args.argc > 2 THEN
     showHelp;
-  ELSE
+    HALT(1);
+  ELSIF Args.argc < 2 THEN
+    Out.String("No configuration file provided, trying "); Out.String(defConf); Out.Ln;
+    COPY(defConf, json)
+  ELSIF Args.argc = 2 THEN
     (*ml := json2tree(mnshDefs.iniFile);*)
     Args.Get(1, json);
-    ml := json2tree(json);
-    menu(ml)
-  END
+    IF (json = "-h") OR (json = "--help") THEN
+      showHelp;
+      HALT(0)
+    END;
+  ELSE
+    (* should not reach here anyway *)
+    showHelp; HALT(1)
+  END;
+    IF ~mnshStorage.exists(json) THEN
+      Out.String(json); Out.String(" is not found!"); Out.Ln;
+      HALT(3);
+    ELSE
+      st := mnshExtTools.check(json);
+      IF st # 0 THEN
+        Out.String(json); Out.String(" is not validated, correct it!"); Out.Ln;
+        HALT(2);
+      ELSE
+        ml := json2tree(json);
+        menu(ml)
+      END
+    END
 END main;
 
 BEGIN
