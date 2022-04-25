@@ -42,7 +42,7 @@ it looks like this:
 
 manush will add one, first option to the list of options described in the configuration: `exit`.
 
-pro tip: you can have `manush /path/to/other_configuration_file.json` as one of the options.
+pro tip: you can have `manush /path/to/other_configuration_file.json` as one of the options. thus you may create menus with unlimited depth! (:
 
 install
 ============
