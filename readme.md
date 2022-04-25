@@ -13,6 +13,7 @@ configuration
 
 manush needs to be started with exactly one commandline argument: path to the configuration file. in case no configuration file is provided, the default `/usr/local/etc/manush.json` will be used. if it's not found too, then the program will issue an error and exit.
 
+manush will attempt to validate the configuratin file with `jq`. that is the inly runtime dependency it currently has.
 
 the example configuration file `manush.json` can be found in the template directory.
 
@@ -67,9 +68,3 @@ then you will find the resulting binary in `build` directory.
 
 second way to build manush is by using the supplied makefile.
 
-configuration
-=============
-
-we also have a runtime dependency: `jq` must be installed to validate json.
-
-`manush.json` in the template directory is the example configuration file and describes the menu and actions presented by manush.
