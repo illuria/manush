@@ -301,7 +301,7 @@ BEGIN
     ELSE
       st := mnshExtTools.check(json);
       IF st # 0 THEN
-        Out.String(json); Out.String(" is not validated, correct it!"); Out.Ln;
+        Out.String(json); Out.String(" is not valid, correct it!"); Out.Ln;
         HALT(2);
       ELSE
         ml := json2tree(json);
