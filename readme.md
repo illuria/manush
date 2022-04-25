@@ -1,4 +1,6 @@
 
+![](menu.png)
+
 manush is a simple menu shell.
 
 it presents the list of configurable options to the user.  
