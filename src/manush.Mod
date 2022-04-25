@@ -13,7 +13,7 @@ CONST
   offsetX0 = 0;
   offsetX = 6;
   offsetX2 = 6;
-  offsetX3 = 20;
+  offsetX3 = 40;
   offsetX4 = 29;
 
 PROCEDURE AssignValues(VAR keys, values: StringList.TStringList; VAR ml: mnshList.mList);
@@ -179,9 +179,9 @@ BEGIN
     crt.GotoXY(x,0);
     crt.TextColor(crt.Green);
     Out.Ln; Out.Ln;
-    Out.String("************ ");
+    Out.String("********************** ");
     crt.TextColor(crt.LightMagenta); Out.String("manush friendly menu");
-    crt.TextColor(crt.Green); Out.String(" ************"); 
+    crt.TextColor(crt.Green); Out.String(" **********************"); 
     i := 0;
     REPEAT
       crt.GotoXY(3, y); 
@@ -214,7 +214,7 @@ BEGIN
 
     INC(y); INC(y);
     crt.GotoXY(offsetX0, y); crt.TextColor(crt.Green);
-    Out.String("**********************************************");
+    Out.String("******************************************************************");
     Out.Ln; Out.Ln;
     
     INC(y); yofquest := y;
