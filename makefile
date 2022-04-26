@@ -4,7 +4,7 @@ build_dir_path := $(mkfile_dir_path)/build
 current_dir := $(notdir $(patsubst %/,%,$(dir $(mkfile_path))))
 DPS = dps
 
-CFLAGS+=
+CFLAGS=
 
 PACKAGES=github.com/norayr/lists github.com/norayr/time github.com/norayr/skprLogger github.com/norayr/skprJson
 
