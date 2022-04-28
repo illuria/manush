@@ -1,4 +1,5 @@
 
+![](logo.png)
 ![](menu.png)
 
 manush is a simple menu shell.
