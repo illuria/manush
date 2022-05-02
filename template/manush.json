@@ -1,20 +1,20 @@
 {
   "Top":
-      {
-        "name": "Top",
-	"exec": "top",
-	"cmnt": "top utility"
-      },
+  {
+    "name": "Top",
+    "exec": "top",
+    "cmnt": "top utility"
+  },
   "Ls":
-      {
-        "name": "List",
-	"exec": "ls -al",
-	"cmnt": "list files and directories"
-      },
+  {
+    "name": "List",
+    "exec": "ls -al",
+    "cmnt": "list files and directories"
+  },
   "sh":
-    {
-      "name": "shell",
-      "exec": "/bin/sh",
-      "cmnt": "posix shell"
-    }
+  {
+    "name": "shell",
+    "exec": "/bin/sh",
+    "cmnt": "posix shell"
+  }
 }
