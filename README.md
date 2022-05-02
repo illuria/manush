@@ -58,8 +58,6 @@ It looks like this:
 }
 ```
 
-// manush will add one (the first) option to the menu described in the configuration: `exit`.
-
 manush will always insert an `exit` command (internal) at the top of the menu.
 
 Pro tip: you can have `manush /path/to/other_configuration_file.json` as one of the options, thus you may create menus with unlimited depth! (:
