@@ -168,7 +168,7 @@ BEGIN
   IO.ReadLine(s);
 END exec;
 
-PROCEDURE drawMenu(VAR ml: mnshList.mList): INTEGER;
+PROCEDURE drawMenu(VAR ml: mnshList.mList; v: BOOLEAN): INTEGER;
 VAR
   i: LONGINT;
   pname, pcmd, pcmnt: StringList.pstring;
@@ -195,13 +195,21 @@ BEGIN
 
       pcmd := mnshList.getCommand(ml, i);
 
-      INC(y, 2); crt.GotoXY(offsetX2, y);
-      crt.TextBackground(crt.DarkGray); crt.TextColor(crt.Green);
-      Out.String(pcmd^);
+      INC(y, 2); 
+
+      IF v THEN
+        crt.GotoXY(offsetX2, y);
+        crt.TextBackground(crt.DarkGray); crt.TextColor(crt.Green);
+        Out.String(pcmd^)
+      END;
 
       pcmnt := mnshList.getComment(ml, i);
 
-      crt.GotoXY(offsetX3, y);
+      IF ~v THEN
+        crt.GotoXY(offsetX2, y)
+      ELSE
+        crt.GotoXY(offsetX3, y)
+      END;
       crt.TextBackground(crt.Black); crt.TextColor(crt.Blue);
       Out.String(pcmnt^);
       INC(y); 
@@ -228,7 +236,7 @@ BEGIN
   RETURN yofquest;
 END drawMenu;
 
-PROCEDURE menu*(VAR ml: mnshList.mList);
+PROCEDURE menu*(VAR ml: mnshList.mList; v: BOOLEAN);
 VAR
   yofquest: INTEGER;
   choice: ARRAY 8 OF CHAR;
@@ -236,7 +244,7 @@ VAR
   pcmd: StringList.pstring;
 BEGIN
   REPEAT
-    yofquest := drawMenu(ml);
+    yofquest := drawMenu(ml, v);
     (*crt.GotoXY(initX, yofquest); crt.TextColor(crt.Yellow);*)
     crt.GotoXY(0, yofquest); crt.TextColor(crt.Yellow);
     Out.Ln; 
@@ -270,6 +278,7 @@ VAR
     options  : opts.Options;
     foptions : opts.Options;
          opt : opts.Option;
+     verbose : BOOLEAN;
  
           ml : mnshList.mList;
         json : ARRAY 512 OF CHAR;
@@ -316,20 +325,29 @@ BEGIN
     HALT(3);
   END; *)
 
-  IF opts.findOpt("-h", foptions) # NIL THEN
-      showHelp;
-      opts.showHelp(options);
-      HALT(0)
-  END;
+  verbose := FALSE;
 
-  IF opts.findOpt("-c", foptions) = NIL
-  THEN
-    Out.Ln;
-    Out.String("No configuration file provided, trying "); Out.String(defConf); Out.Ln;
+  IF foptions # NIL THEN
+    IF opts.findOpt("-h", foptions) # NIL THEN
+        showHelp;
+        opts.showHelp(options);
+        HALT(0)
+    END;
+    
+    IF opts.findOpt("-v", foptions) # NIL THEN
+      verbose := TRUE
+    END;
+
+    IF opts.findOpt("-c", foptions) = NIL THEN
+      Out.Ln;
+      Out.String("No configuration file provided, trying "); Out.String(defConf); Out.Ln;
+      COPY(defConf, json)
+    ELSE
+      (*ml := json2tree(mnshDefs.iniFile);*)
+      opts.valOfOpt("-c", foptions, json);
+    END;
+  ELSE (* if foptions = NIL *)
     COPY(defConf, json)
-  ELSE
-    (*ml := json2tree(mnshDefs.iniFile);*)
-    opts.valOfOpt("-c", foptions, json);
   END;
 
     IF ~mnshStorage.exists(json) THEN
@@ -342,7 +360,7 @@ BEGIN
         HALT(2);
       ELSE
         ml := json2tree(json);
-        menu(ml)
+        menu(ml, verbose)
       END
     END
 END main;
