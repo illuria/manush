@@ -1,0 +1,22 @@
+{
+  "Package": "opts",
+  "Author":  "noch",
+  "License": "GPL-3",
+  "Version": "0.1",
+  "Remote":
+    {
+    "type": "git",
+    "path": "https://github.com/norayr/opts",
+    "tag" : "0.1"
+    },
+  "Dependencies":
+  {
+    "lists": "0.1"
+  },
+  "Build":
+  {
+     "voc -s": "src/optsos.Mod",
+     "voc -s": "src/opts.Mod",
+     "voc -m": "src/testopts.Mod"
+  }
+}
