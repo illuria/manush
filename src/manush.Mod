@@ -3,7 +3,7 @@ MODULE manush;
 IMPORT Out, Strings, IntStr := oocIntStr,
        crt, Platform, Args,
        IO := ulmIO,
-       skprJson, strutils, StringList,
+       skprJson, strutils, StringList, opts,
        mnshStorage, mnshDefs, mnshList, mnshExtTools;
 
 CONST
@@ -260,41 +260,78 @@ END menu;
 PROCEDURE showHelp;
 BEGIN
   Out.String("manush friendly shell"); Out.Ln; Out.Ln;
-  Out.String("expects exactly one commandline argument,"); Out.Ln;
-  Out.String("which contains menu description in json format"); Out.Ln;
-  Out.Ln;
-  Out.String("usage:"); Out.Ln;
-  Out.String("  manush config.json"); Out.Ln;
-  Out.Ln;
   Out.String("if no configuration file provided, ");
   Out.String(defConf); Out.String(" will be used."); Out.Ln;
   Out.Ln;
 END showHelp;
 
-
 PROCEDURE main;
 VAR
- ml: mnshList.mList;
- json: ARRAY 512 OF CHAR;
- st: INTEGER;
+    options  : opts.Options;
+    foptions : opts.Options;
+         opt : opts.Option;
+ 
+          ml : mnshList.mList;
+        json : ARRAY 512 OF CHAR;
+          st : INTEGER;
 BEGIN
-  IF Args.argc > 2 THEN
+  options  := opts.createOptions();
+  foptions := opts.createOptions();
+
+  opt      := opts.createOpt();
+  opts.setOptName(opt, "-c");
+  opts.setOptHasVal(opt, TRUE);
+  opts.setOptRequired(opt, FALSE);
+  opts.setOptLName(opt, "--config");
+  opts.setOptDesc(opt, "configuration file");
+
+  options.add(options, opt);
+
+  opt     := opts.createOpt();
+  opts.setOptName(opt, "-v");
+  opts.setOptHasVal(opt, FALSE);
+  opts.setOptRequired(opt, FALSE);
+  opts.setOptLName(opt, "--verbose");
+  opts.setOptDesc(opt, "show the command itself (e.g. service nginx restart)");
+
+  options.add(options, opt);
+
+  opt     := opts.createOpt();
+  opts.setOptName(opt, "-h");
+  opts.setOptHasVal(opt, FALSE);
+  opts.setOptRequired(opt, FALSE);
+  opts.setOptLName(opt, "--help");
+  opts.setOptDesc(opt, "show this help message");
+
+  options.add(options, opt);
+
+  foptions := opts.populateOptions(options);
+  (* this we don't need because we don't have required options 
+  IF opts.reqsSatisfied(options, foptions) THEN
+    Out.String("required options provided"); Out.Ln;
+  ELSE
+    Out.String("required options not provided"); Out.Ln;
     showHelp;
-    HALT(1);
-  ELSIF Args.argc < 2 THEN
+    opts.showHelp(options);
+    HALT(3);
+  END; *)
+
+  IF opts.findOpt("-h", foptions) # NIL THEN
+      showHelp;
+      opts.showHelp(options);
+      HALT(0)
+  END;
+
+  IF opts.findOpt("-c", foptions) = NIL
+  THEN
+    Out.Ln;
     Out.String("No configuration file provided, trying "); Out.String(defConf); Out.Ln;
     COPY(defConf, json)
-  ELSIF Args.argc = 2 THEN
-    (*ml := json2tree(mnshDefs.iniFile);*)
-    Args.Get(1, json);
-    IF (json = "-h") OR (json = "--help") THEN
-      showHelp;
-      HALT(0)
-    END;
   ELSE
-    (* should not reach here anyway *)
-    showHelp; HALT(1)
+    (*ml := json2tree(mnshDefs.iniFile);*)
+    opts.valOfOpt("-c", foptions, json);
   END;
+
     IF ~mnshStorage.exists(json) THEN
       Out.String(json); Out.String(" is not found!"); Out.Ln;
       HALT(3);

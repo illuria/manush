@@ -21,6 +21,7 @@ get_deps:
 
 build_deps:
 	gmake -f $(mkfile_dir_path)/dps/lists/makefile BUILD=$(build_dir_path)
+	gmake -f $(mkfile_dir_path)/dps/opts/makefile BUILD=$(build_dir_path)
 	gmake -f $(mkfile_dir_path)/dps/time/makefile BUILD=$(build_dir_path)
 	gmake -f $(mkfile_dir_path)/dps/skprLogger/makefile BUILD=$(build_dir_path)
 	gmake -f $(mkfile_dir_path)/dps/skprJson/makefile BUILD=$(build_dir_path)
