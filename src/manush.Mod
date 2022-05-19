@@ -308,7 +308,7 @@ BEGIN
   opts.setOptHasVal(opt, TRUE);
   opts.setOptRequired(opt, FALSE);
   opts.setOptLName(opt, "--verbose");
-  opts.setOptDesc(opt, "show the command itself (e.g. service nginx restart)");
+  opts.setOptDesc(opt, "verbosity level in range 1..3: only name, name and comment, name, comment and the command.");
 
   options.add(options, opt);
 
