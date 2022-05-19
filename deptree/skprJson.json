@@ -11,7 +11,7 @@
     },
   "Dependencies":
   {
-    "lists": "0.1"
+    "lists": "0.1",
     "skprLogger": "0.1"
   },
   "Build":

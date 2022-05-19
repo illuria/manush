@@ -11,6 +11,7 @@
     },
   "Dependencies":
   {
+    "opts": "0.1",
     "skprJson": "0.1"
   },
   "Build":
