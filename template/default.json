@@ -1,0 +1,26 @@
+{
+"Top":
+      {
+        "name": "Other menu",
+	"exec": "manush /usr/local/etc/manush/other.json",
+	"cmnt": "Other menu"
+      },
+"Restart Web Services":
+      {
+        "name": "Restart Web Server",
+	"exec": "service nginx restart",
+	"cmnt": "Restart nginx HTTP server"
+      },
+"reboot":
+    {
+      "name": "Reboot",
+      "exec": "shutdown -r now",
+      "cmnt": "Restart the machine, now!"
+    },
+"shell":
+    {
+      "name": "Shell",
+      "exec": "/bin/sh",
+      "cmnt": "POSIX Shell"
+    }
+}
