@@ -332,7 +332,7 @@ BEGIN
     HALT(3);
   END; *)
 
-  verbosityLevel := verbosityLevel1;
+  verbosityLevel := verbosityLevel2;
 
   IF foptions # NIL THEN
     IF opts.findOpt("-h", foptions) # NIL THEN
