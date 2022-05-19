@@ -8,6 +8,10 @@ IMPORT Out, Strings, IntStr := oocIntStr,
 
 CONST
   defConf = "/usr/local/etc/manush.json";
+  verbosityLevel1 = 1;
+  verbosityLevel2 = 2;
+  verbosityLevel3 = 3;
+  
   initX = 3;
   initY = 5;
   offsetX0 = 0;
@@ -15,6 +19,7 @@ CONST
   offsetX2 = 6;
   offsetX3 = 40;
   offsetX4 = 29;
+
 
 PROCEDURE AssignValues(VAR keys, values: StringList.TStringList; VAR ml: mnshList.mList);
 VAR
@@ -168,7 +173,7 @@ BEGIN
   IO.ReadLine(s);
 END exec;
 
-PROCEDURE drawMenu(VAR ml: mnshList.mList; v: BOOLEAN): INTEGER;
+PROCEDURE drawMenu(VAR ml: mnshList.mList; v: LONGINT): INTEGER;
 VAR
   i: LONGINT;
   pname, pcmd, pcmnt: StringList.pstring;
@@ -184,34 +189,33 @@ BEGIN
     crt.TextColor(crt.Green); Out.String(" **********************"); 
     i := 0;
     REPEAT
-      crt.GotoXY(3, y); 
+      (* write option number *)
+      crt.GotoXY(initX, y); 
       crt.TextColor(crt.Blue);
       Out.Int(i, 0); Out.Char(':'); 
-
+      (* write option name *)
       pname := mnshList.getName(ml, i);
 
       crt.GotoXY(offsetX, y); crt.TextColor(crt.Yellow);
       Out.String(pname^); 
 
-      pcmd := mnshList.getCommand(ml, i);
+      IF v >= verbosityLevel2 THEN
+        pcmnt := mnshList.getComment(ml, i);
 
-      INC(y, 2); 
+        crt.GotoXY(offsetX3, y);
+        crt.TextBackground(crt.Black); crt.TextColor(crt.Blue);
+        Out.String(pcmnt^);
+      END;
 
-      IF v THEN
+      IF v = verbosityLevel3 THEN
+        pcmd := mnshList.getCommand(ml, i);
+
+        INC(y, 2); 
         crt.GotoXY(offsetX2, y);
         crt.TextBackground(crt.DarkGray); crt.TextColor(crt.Green);
         Out.String(pcmd^)
       END;
 
-      pcmnt := mnshList.getComment(ml, i);
-
-      IF ~v THEN
-        crt.GotoXY(offsetX2, y)
-      ELSE
-        crt.GotoXY(offsetX3, y)
-      END;
-      crt.TextBackground(crt.Black); crt.TextColor(crt.Blue);
-      Out.String(pcmnt^);
       INC(y); 
       INC(i); IF i # ml.Count THEN INC(y) END;
     UNTIL i = ml.Count;
@@ -236,7 +240,7 @@ BEGIN
   RETURN yofquest;
 END drawMenu;
 
-PROCEDURE menu*(VAR ml: mnshList.mList; v: BOOLEAN);
+PROCEDURE menu*(VAR ml: mnshList.mList; v: LONGINT);
 VAR
   yofquest: INTEGER;
   choice: ARRAY 8 OF CHAR;
@@ -278,7 +282,10 @@ VAR
     options  : opts.Options;
     foptions : opts.Options;
          opt : opts.Option;
-     verbose : BOOLEAN;
+        opt2 : opts.Option;
+    verbosityLevel: LONGINT;
+         res : SHORTINT;
+        
  
           ml : mnshList.mList;
         json : ARRAY 512 OF CHAR;
@@ -298,7 +305,7 @@ BEGIN
 
   opt     := opts.createOpt();
   opts.setOptName(opt, "-v");
-  opts.setOptHasVal(opt, FALSE);
+  opts.setOptHasVal(opt, TRUE);
   opts.setOptRequired(opt, FALSE);
   opts.setOptLName(opt, "--verbose");
   opts.setOptDesc(opt, "show the command itself (e.g. service nginx restart)");
@@ -325,7 +332,7 @@ BEGIN
     HALT(3);
   END; *)
 
-  verbose := FALSE;
+  verbosityLevel := verbosityLevel1;
 
   IF foptions # NIL THEN
     IF opts.findOpt("-h", foptions) # NIL THEN
@@ -333,9 +340,20 @@ BEGIN
         opts.showHelp(options);
         HALT(0)
     END;
-    
-    IF opts.findOpt("-v", foptions) # NIL THEN
-      verbose := TRUE
+   
+    opt2 := opts.findOpt("-v", foptions);
+    IF opt2 # NIL THEN
+      IF opt2.val # NIL THEN
+        IntStr.StrToInt(opt2.val^, verbosityLevel, res);
+        IF res = IntStr.strAllRight THEN
+          IF verbosityLevel <= verbosityLevel1 THEN verbosityLevel := verbosityLevel1
+          ELSIF verbosityLevel >= verbosityLevel3 THEN verbosityLevel := verbosityLevel3
+          END
+        ELSE
+          Out.String("Error: verbosity level should be a number in a range of 1..3"); Out.Ln;
+          HALT(2);
+        END;
+      END;
     END;
 
     IF opts.findOpt("-c", foptions) = NIL THEN
@@ -360,7 +378,7 @@ BEGIN
         HALT(2);
       ELSE
         ml := json2tree(json);
-        menu(ml, verbose)
+        menu(ml, verbosityLevel)
       END
     END
 END main;
