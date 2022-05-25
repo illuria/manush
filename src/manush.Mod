@@ -1,7 +1,7 @@
 MODULE manush;
 
 IMPORT Out, Strings, IntStr := oocIntStr,
-       crt, Platform, Args,
+       crt, VT100, Platform, Args,
        IO := ulmIO,
        skprJson, strutils, StringList, opts,
        mnshStorage, mnshDefs, mnshList, mnshExtTools;
@@ -267,6 +267,7 @@ BEGIN
     pcmd := mnshList.getCommand(ml, ci);
     IF ci # 0 THEN exec(pcmd) END
   UNTIL ci = 0;
+  VT100.Reset
 END menu;
 
 PROCEDURE showHelp;
