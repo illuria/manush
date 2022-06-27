@@ -1,0 +1,20 @@
+{
+"top":
+    {
+      "name": "Displays Top Processes",
+      "exec": "top",
+      "cmnt": "Run the `top' Utility"
+    },
+"ls":
+    {
+      "name": "List Files and Directories",
+      "exec": "ls -al",
+      "cmnt": "Run the `ls -al' Command"
+    },
+"shell":
+    {
+      "name": "Open a POSIX Shell",
+      "exec": "/bin/sh",
+      "cmnt": "Run a Bourne Shell"
+    }
+}
