@@ -2,7 +2,7 @@
 "another menu":
     {
       "name": "Another Menu",
-      "exec": "manush /usr/local/etc/manush/another.json",
+      "exec": "manush -c /usr/local/etc/manush/another.json",
       "cmnt": "Another Menu"
     },
 "restart web server":
