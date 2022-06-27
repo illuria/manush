@@ -56,7 +56,7 @@ VAR
 BEGIN
   StringList.pstringFromString("Exit", name);
   StringList.pstringFromString("(internal)", command);
-  StringList.pstringFromString("exit this menu", comment);
+  StringList.pstringFromString("Exit This Menu", comment);
   ml.appendNodeByPointers(ml, name, command, comment);
 END assignZeroOption;
 
