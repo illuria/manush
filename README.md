@@ -31,7 +31,7 @@ In case no argument is provided, the default, `/usr/local/etc/manush.json` will 
 
 manush will attempt to validate the configuration file with `jq`, which is the only runtime dependency it currently has.
 
-For a sample configuration have a look at [`manush.json`](template/manush.json)
+For a sample configuration have a look at [`manush.json`](templates/manush.json)
 
 It looks like this:
 
