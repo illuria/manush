@@ -31,30 +31,36 @@ In case no argument is provided, the default, `/usr/local/etc/manush.json` will 
 
 manush will attempt to validate the configuration file with `jq`, which is the only runtime dependency it currently has.
 
-For a sample configuration have a look at [`manush.json`](templates/manush.json)
+For a sample configuration have a look at [`default.json`](templates/default.json)
 
 It looks like this:
 
 ```json
 {
-  "Top":
-  {
-    "name": "Top",
-    "exec": "top",
-    "cmnt": "top utility"
-  },
-  "Ls":
-  {
-    "name": "List",
-    "exec": "ls -al",
-    "cmnt": "list files and directories"
-  },
-  "sh":
-  {
-    "name": "shell",
-    "exec": "/bin/sh",
-    "cmnt": "posix shell"
-  }
+"another menu":
+    {
+      "name": "Another Menu",
+      "exec": "manush -c /usr/local/etc/manush/another.json",
+      "cmnt": "Another Menu"
+    },
+"restart web server":
+    {
+      "name": "Restart Web Server",
+      "exec": "service nginx restart",
+      "cmnt": "Restart NGINX Server"
+    },
+"reboot":
+    {
+      "name": "Reboot",
+      "exec": "shutdown -r now",
+      "cmnt": "Reboot the Machine!"
+    },
+"shell":
+    {
+      "name": "Shell",
+      "exec": "/bin/sh",
+      "cmnt": "POSIX Shell"
+    }
 }
 ```
 
