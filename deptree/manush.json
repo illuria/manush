@@ -1,12 +1,13 @@
 {
   "Package": "manush",
   "Author":  "noch",
-  "License": "unefinedyet",
-  "Version": "0.1",
+  "License": "BSD 2-Clause License",
+  "Version": "0.1.1",
   "Remote":
     {
     "type": "git",
-    "path": "http://git0.loc.illuriasecurity.com/illuria/manush",
+    "path": "https://github.com/illuria/manush",
+    "branch": "stty",
     "tag" : "0.1"
     },
   "Dependencies":
@@ -20,6 +21,9 @@
      "voc -s": "src/mnshDefs.Mod",
      "voc -s": "src/mnshStorage.Mod",
      "voc -s": "src/mnshExtTools.Mod",
+     "voc -s": "src/mnshTerm.Mod",
+     "voc -s": "src/mnshInput.Mod",
+     "voc -s": "src/vt100.Mod",
      "voc -M": "src/manush.Mod"
   }
 }
