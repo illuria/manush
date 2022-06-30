@@ -1,8 +1,8 @@
 MODULE manush;
 
 IMPORT Out, Strings, IntStr := oocIntStr,
-       crt, VT100, Platform, Args,
-       IO := ulmIO,
+       crt, VT100 := vt100, Platform, Args,
+       mnshInput, mnshTerm,
        skprJson, strutils, StringList, opts,
        mnshStorage, mnshDefs, mnshList, mnshExtTools;
 
@@ -155,7 +155,7 @@ END showMenuOld; (* incomplete *)
 
 PROCEDURE exec(VAR cmd: StringList.pstring);
 VAR
-  s: ARRAY 3 OF CHAR;
+  ch: CHAR;
   i: INTEGER;
 BEGIN
   crt.ClrScr;
@@ -163,14 +163,15 @@ BEGIN
   crt.GotoXY(initX, initY);
   Out.Ln;
   i := Platform.System(cmd^);
-  crt.cursoron;
-  IO.ReadLine(s);
+  (*crt.cursoron;
+  ch := mnshInput.getChar();
   crt.ClrScr;
-  crt.GotoXY(initX, initY);
+  crt.GotoXY(initX, initY);*)
   Out.String("exit code of the program: "); Out.Int(i, 0); Out.Ln;
   Out.Ln; Out.String("press ENTER to continue"); 
   Out.Ln;
-  IO.ReadLine(s);
+  mnshTerm.StartV7Mode;
+  ch := mnshInput.getChar();
 END exec;
 
 PROCEDURE drawMenu(VAR ml: mnshList.mList; v: LONGINT): INTEGER;
@@ -243,10 +244,12 @@ END drawMenu;
 PROCEDURE menu*(VAR ml: mnshList.mList; v: LONGINT);
 VAR
   yofquest: INTEGER;
-  choice: ARRAY 8 OF CHAR;
+  choice: CHAR;
+  choiceStr: ARRAY 3 OF CHAR;
   ci: LONGINT; res: IntStr.ConvResults;
   pcmd: StringList.pstring;
 BEGIN
+  mnshTerm.StartV7Mode;
   REPEAT
     yofquest := drawMenu(ml, v);
     (*crt.GotoXY(initX, yofquest); crt.TextColor(crt.Yellow);*)
@@ -256,8 +259,10 @@ BEGIN
     REPEAT
       (*crt.GotoXY(offsetX4, yofquest);*)
       crt.GotoXY(0, yofquest);
-      IO.ReadLine(choice);
-      IntStr.StrToInt(choice, ci, res);
+      choice := mnshInput.getChar();
+      choiceStr[0] := choice;
+      choiceStr[1] := 0X;
+      IntStr.StrToInt(choiceStr, ci, res);
       IF (res # IntStr.strAllRight) OR (ci > ml.Count - 1) THEN
         crt.GotoXY(0, yofquest); crt.TextColor(crt.Red);
         Out.String("wrong number.. "); crt.TextColor(crt.Yellow);
@@ -385,8 +390,7 @@ BEGIN
 END main;
 
 BEGIN
-
-main;
+  main;
 
 
 END manush.

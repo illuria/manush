@@ -42,6 +42,9 @@ build_deps:
 			   ${.CURDIR}/src/mnshDefs.Mod     \
 			   ${.CURDIR}/src/mnshStorage.Mod  \
 			   ${.CURDIR}/src/mnshExtTools.Mod \
+			   ${.CURDIR}/src/mnshInput.Mod \
+			   ${.CURDIR}/src/mnshTerm.Mod \
+			   ${.CURDIR}/src/vt100.Mod \
 			   ${.CURDIR}/src/manush.Mod -M
 
 clean:
