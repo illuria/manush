@@ -20,6 +20,13 @@ CONST
   offsetX3 = 40;
   offsetX4 = 29;
 
+  toggleViewKey = 'v';
+
+PROCEDURE changeVerbosity(VAR v: LONGINT);
+BEGIN
+  INC(v);
+  IF v > verbosityLevel3 THEN v := verbosityLevel1 END
+END changeVerbosity;
 
 PROCEDURE AssignValues(VAR keys, values: StringList.TStringList; VAR ml: mnshList.mList);
 VAR
@@ -167,6 +174,7 @@ BEGIN
   ch := mnshInput.getChar();
   crt.ClrScr;
   crt.GotoXY(initX, initY);*)
+  Out.Ln;
   Out.String("exit code of the program: "); Out.Int(i, 0); Out.Ln;
   Out.Ln; Out.String("press ENTER to continue"); 
   Out.Ln;
@@ -257,17 +265,21 @@ BEGIN
     Out.Ln; 
     Out.String("enter number:");
     REPEAT
-      (*crt.GotoXY(offsetX4, yofquest);*)
+     (*crt.GotoXY(offsetX4, yofquest);*)
       crt.GotoXY(0, yofquest);
       choice := mnshInput.getChar();
-      choiceStr[0] := choice;
-      choiceStr[1] := 0X;
-      IntStr.StrToInt(choiceStr, ci, res);
-      IF (res # IntStr.strAllRight) OR (ci > ml.Count - 1) THEN
-        crt.GotoXY(0, yofquest); crt.TextColor(crt.Red);
-        Out.String("wrong number.. "); crt.TextColor(crt.Yellow);
-        Out.String("enter number:"); Out.Ln;
-      END;
+      IF choice = toggleViewKey THEN
+        changeVerbosity(v)
+      ELSE
+        choiceStr[0] := choice;
+        choiceStr[1] := 0X;
+        IntStr.StrToInt(choiceStr, ci, res);
+        IF (res # IntStr.strAllRight) OR (ci > ml.Count - 1) THEN
+          crt.GotoXY(0, yofquest); crt.TextColor(crt.Red);
+          Out.String("wrong number.. "); crt.TextColor(crt.Yellow);
+          Out.String("enter number:"); Out.Ln;
+        END
+      END
     UNTIL (res = IntStr.strAllRight) & (ci <= ml.Count -1);
     pcmd := mnshList.getCommand(ml, ci);
     IF ci # 0 THEN exec(pcmd) END
@@ -389,7 +401,15 @@ BEGIN
     END
 END main;
 
+PROCEDURE interrupt(i: LONGINT);
 BEGIN
+         crt.GotoXY(0, yofquest); crt.TextColor(crt.Red);
+         Out.String("interrupt caught.. "); crt.TextColor(crt.Yellow);
+         Out.String("ignoring"); Out.Ln;
+END interrupt;
+
+BEGIN
+  Platform.SetInterruptHandler(interrupt);
   main;
 
 
