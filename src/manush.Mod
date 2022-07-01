@@ -268,6 +268,7 @@ VAR
   choiceStr: ARRAY 3 OF CHAR;
   ci: LONGINT; res: IntStr.ConvResults;
   pcmd: StringList.pstring;
+  exitLoop: BOOLEAN;
 BEGIN
   mnshTerm.StartV7Mode;
   REPEAT
@@ -277,14 +278,16 @@ BEGIN
     Out.Ln; 
     Out.String("enter number:");
     REPEAT
+      exitLoop := TRUE;
      (*crt.GotoXY(offsetX4, yofquest);*)
       crt.GotoXY(0, yofquest);
       choice := mnshInput.getChar();
       IF choice = toggleViewKey THEN
         changeVerbosity(v);
-        ci := -1; (* setting it to something other than zero so the loop continues *)
-        EXIT
+        yofquest := drawMenu(ml, v);
+        exitLoop := FALSE
       ELSE
+        exitLoop := TRUE;
         choiceStr[0] := choice;
         choiceStr[1] := 0X;
         IntStr.StrToInt(choiceStr, ci, res);
@@ -292,9 +295,11 @@ BEGIN
           crt.GotoXY(0, yofquest); crt.TextColor(crt.Red);
           Out.String("wrong number.. "); crt.TextColor(crt.Yellow);
           Out.String("enter number:"); Out.Ln;
+        ELSE
+          exitLoop := TRUE
         END
       END
-    UNTIL (res = IntStr.strAllRight) & (ci <= ml.Count -1);
+    UNTIL exitLoop & (res = IntStr.strAllRight) & (ci <= ml.Count -1);
     pcmd := mnshList.getCommand(ml, ci);
     IF ci # 0 THEN exec(pcmd) END
   UNTIL ci = 0;
@@ -307,6 +312,8 @@ BEGIN
   Out.String("if no configuration file provided, ");
   Out.String(defConf); Out.String(" will be used."); Out.Ln;
   Out.Ln;
+  Out.String("press 'v' to toggle verbosity level"); Out.Ln;
+  Out.Ln
 END showHelp;
 
 PROCEDURE main;
