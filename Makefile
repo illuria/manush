@@ -17,17 +17,18 @@ all: ${DEPS}
 	@if [ ! -d build ]; then \
 		mkdir build;     \
 	fi
-	@for i in $?; do                                \
-		ln -sf  ${ROOTDIR}/build                \
-			${ROOTDIR}/deps/$${i#*/}/build; \
-		make -C ${ROOTDIR}/deps/$${i#*/};       \
+	@for i in $?; do                                 \
+		cp -r   ${ROOTDIR}/build                 \
+			${ROOTDIR}/deps/$${i#*/}/build;  \
+		make -C ${ROOTDIR}/deps/$${i#*/};        \
+		cp -r   ${ROOTDIR}/deps/$${i#*/}/build/* \
+			${ROOTDIR}/build/;               \
 	done
 	@cd build; voc -s  ${ROOTDIR}/../src/mnshList.Mod     \
 			   ${ROOTDIR}/../src/mnshDefs.Mod     \
 			   ${ROOTDIR}/../src/mnshStorage.Mod  \
 			   ${ROOTDIR}/../src/mnshExtTools.Mod \
 			   ${ROOTDIR}/../src/manush.Mod -M
-
 
 ${DEPS}:
 	@for i in $@; do                                          \
