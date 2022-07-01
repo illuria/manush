@@ -281,7 +281,9 @@ BEGIN
       crt.GotoXY(0, yofquest);
       choice := mnshInput.getChar();
       IF choice = toggleViewKey THEN
-        changeVerbosity(v)
+        changeVerbosity(v);
+        ci := -1; (* setting it to something other than zero so the loop continues *)
+        EXIT
       ELSE
         choiceStr[0] := choice;
         choiceStr[1] := 0X;
