@@ -22,11 +22,23 @@ CONST
 
   toggleViewKey = 'v';
 
+VAR
+  interrupted: BOOLEAN;
+
 PROCEDURE changeVerbosity(VAR v: LONGINT);
 BEGIN
   INC(v);
   IF v > verbosityLevel3 THEN v := verbosityLevel1 END
 END changeVerbosity;
+
+PROCEDURE processInterrupt(yofquest: INTEGER);
+BEGIN
+  crt.GotoXY(0, yofquest); crt.TextColor(crt.Red);
+  Out.String("interrupt caught.. "); crt.TextColor(crt.Yellow);
+  Out.String("ignoring"); Out.Ln;
+  interrupted := FALSE
+END processInterrupt;
+
 
 PROCEDURE AssignValues(VAR keys, values: StringList.TStringList; VAR ml: mnshList.mList);
 VAR
@@ -403,12 +415,11 @@ END main;
 
 PROCEDURE interrupt(i: LONGINT);
 BEGIN
-         crt.GotoXY(0, yofquest); crt.TextColor(crt.Red);
-         Out.String("interrupt caught.. "); crt.TextColor(crt.Yellow);
-         Out.String("ignoring"); Out.Ln;
+  interrupted := TRUE;
 END interrupt;
 
 BEGIN
+  interrupted := FALSE;
   Platform.SetInterruptHandler(interrupt);
   main;
 
