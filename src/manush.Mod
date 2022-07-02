@@ -333,7 +333,7 @@ BEGIN
       END;
     UNTIL exitLoop & (res = IntStr.strAllRight) & (ci <= ml.Count -1);
     pcmd := mnshList.getCommand(ml, ci);
-    IF ci # 0 THEN exec(pcmd) ELSE checkInterrupted END
+    IF ci # 0 THEN exec(pcmd) END
   UNTIL ci = 0;
   VT100.Reset
 END menu;

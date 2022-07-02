@@ -4,6 +4,7 @@ IMPORT Platform;
 CONST
   cmdStart0 = "stty cbreak";
   cmdStart1 = "stty -echo";
+  cmdStart2 = "stty -echoctl";
   cmdStop0 = "stty -g $(stty -g)";
   cmdStop1 = "stty echo";
   cmdStop2 = "stty sane";
@@ -17,6 +18,8 @@ BEGIN
   i := Platform.System(cmdStart0);
   Platform.Delay(delay);
   i := Platform.System(cmdStart1);
+  Platform.Delay(delay);
+  i := Platform.System(cmdStart2);
 END StartV7Mode;
 
 PROCEDURE StopV7Mode*;
