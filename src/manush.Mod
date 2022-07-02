@@ -22,6 +22,11 @@ CONST
 
   msgWrongNumber = "wrong number... ";
   msgEnterNumber = "enter number:   ";
+  msgConfigFile  = "config file ";
+  msgNotFound    = " not found!";
+  msgQuitting    = "quitting...";
+  msgNoConfProvided = "No configuration file provided, trying ";
+  msgNotValid    = " not valid, correct it!";
 
   toggleViewKey = 'v';
 
@@ -119,7 +124,7 @@ BEGIN
       INC(i)
     UNTIL i = json.NonTerminalNumber;
   ELSE
-    Out.String("config file "); Out.String(cnf); Out.String(" not found!"); Out.Ln; Out.String("quitting..."); Out.Ln; HALT(1);
+    Out.String(msgConfigFile); Out.String(cnf); Out.String(msgNotFound); Out.Ln; Out.String(msgQuitting); Out.Ln; HALT(1);
   END;
   RETURN ml;
 END json2tree;
@@ -276,6 +281,7 @@ BEGIN
   crt.TextColor(crt.Yellow);
   Out.String(msgEnterNumber); Out.Ln;
   mnshTerm.StartV7Mode;
+  crt.cursoroff
 END ask;
 
 PROCEDURE menu*(VAR ml: mnshList.mList; v: LONGINT);
@@ -423,7 +429,7 @@ BEGIN
 
     IF opts.findOpt("-c", foptions) = NIL THEN
       Out.Ln;
-      Out.String("No configuration file provided, trying "); Out.String(defConf); Out.Ln;
+      Out.String(msgNoConfProvided); Out.String(defConf); Out.Ln;
       COPY(defConf, json)
     ELSE
       (*ml := json2tree(mnshDefs.iniFile);*)
@@ -434,12 +440,12 @@ BEGIN
   END;
 
     IF ~mnshStorage.exists(json) THEN
-      Out.String(json); Out.String(" is not found!"); Out.Ln;
+      Out.String(json); Out.String(msgNotFound); Out.Ln;
       HALT(3);
     ELSE
       st := mnshExtTools.check(json);
       IF st # 0 THEN
-        Out.String(json); Out.String(" is not valid, correct it!"); Out.Ln;
+        Out.String(json); Out.String(msgNotValid); Out.Ln;
         HALT(2);
       ELSE
         ml := json2tree(json);
