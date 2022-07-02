@@ -20,10 +20,13 @@ CONST
   offsetX3 = 40;
   offsetX4 = 29;
 
+  msgWrongNumber = "wrong number... ";
+  msgEnterNumber = "enter number:   ";
+
   toggleViewKey = 'v';
 
 VAR
-  interrupted: BOOLEAN;
+  interrupted, wrong: BOOLEAN;
 
 PROCEDURE changeVerbosity(VAR v: LONGINT);
 BEGIN
@@ -261,6 +264,20 @@ BEGIN
   RETURN yofquest;
 END drawMenu;
 
+PROCEDURE ask(err: BOOLEAN; y: INTEGER);
+BEGIN
+  crt.GotoXY(0, y);
+  IF err THEN
+    crt.TextColor(crt.Red);
+    Out.String(msgWrongNumber); mnshTerm.StartV7Mode;
+    wrong := TRUE;
+    crt.GotoXY(Strings.Length(msgWrongNumber)+2, y);
+  END;
+  crt.TextColor(crt.Yellow);
+  Out.String(msgEnterNumber); Out.Ln;
+  mnshTerm.StartV7Mode;
+END ask;
+
 PROCEDURE menu*(VAR ml: mnshList.mList; v: LONGINT);
 VAR
   yofquest: INTEGER;
@@ -269,39 +286,48 @@ VAR
   ci: LONGINT; res: IntStr.ConvResults;
   pcmd: StringList.pstring;
   exitLoop: BOOLEAN;
+
+  PROCEDURE checkInterrupted;    
+  BEGIN  
+    IF interrupted THEN
+      yofquest := drawMenu(ml, v);
+      processInterrupt(yofquest)
+    END
+  END checkInterrupted;
+
 BEGIN
-  mnshTerm.StartV7Mode;
+  wrong := FALSE;
   REPEAT
     yofquest := drawMenu(ml, v);
-    (*crt.GotoXY(initX, yofquest); crt.TextColor(crt.Yellow);*)
-    crt.GotoXY(0, yofquest); crt.TextColor(crt.Yellow);
-    Out.Ln; 
-    Out.String("enter number:");
+    ask(wrong, yofquest);
     REPEAT
+      mnshTerm.StartV7Mode;
+      wrong := FALSE;
       exitLoop := TRUE;
      (*crt.GotoXY(offsetX4, yofquest);*)
       crt.GotoXY(0, yofquest);
+      mnshTerm.StartV7Mode;
       choice := mnshInput.getChar();
+      mnshTerm.StartV7Mode;
       IF choice = toggleViewKey THEN
         changeVerbosity(v);
         yofquest := drawMenu(ml, v);
+        ask(wrong, yofquest);
         exitLoop := FALSE
       ELSE
-        exitLoop := TRUE;
         choiceStr[0] := choice;
         choiceStr[1] := 0X;
         IntStr.StrToInt(choiceStr, ci, res);
         IF (res # IntStr.strAllRight) OR (ci > ml.Count - 1) THEN
-          crt.GotoXY(0, yofquest); crt.TextColor(crt.Red);
-          Out.String("wrong number.. "); crt.TextColor(crt.Yellow);
-          Out.String("enter number:"); Out.Ln;
+          exitLoop := FALSE; wrong := TRUE; yofquest := drawMenu(ml, v); ask(wrong, yofquest)
         ELSE
+          wrong := FALSE;
           exitLoop := TRUE
         END
-      END
+      END;
     UNTIL exitLoop & (res = IntStr.strAllRight) & (ci <= ml.Count -1);
     pcmd := mnshList.getCommand(ml, ci);
-    IF ci # 0 THEN exec(pcmd) END
+    IF ci # 0 THEN exec(pcmd) ELSE checkInterrupted END
   UNTIL ci = 0;
   VT100.Reset
 END menu;
@@ -431,6 +457,6 @@ BEGIN
   interrupted := FALSE;
   Platform.SetInterruptHandler(interrupt);
   main;
-
+  mnshTerm.StopV7Mode;
 
 END manush.
