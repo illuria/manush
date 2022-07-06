@@ -1,6 +1,8 @@
 
-![](logo.png)
-![](menu.png)
+![Dark Logo](logo-dark.png#gh-light-mode-only)
+![Light Logo](logo-light.png#gh-dark-mode-only)
+---
+![Demo](menu.png)
 
 manush is a simple, configurable, secure menu shell.
 
