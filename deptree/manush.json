@@ -4,12 +4,12 @@
   "License": "BSD 2-Clause License",
   "Version": "0.1.1",
   "Remote":
-    {
+  {
     "type": "git",
     "path": "https://github.com/illuria/manush",
-    "branch": "stty",
+    "branch": "master",
     "tag" : "0.1"
-    },
+  },
   "Dependencies":
   {
     "opts": "0.1",
@@ -17,13 +17,13 @@
   },
   "Build":
   {
-     "voc -s": "src/mnshList.Mod",
-     "voc -s": "src/mnshDefs.Mod",
-     "voc -s": "src/mnshStorage.Mod",
-     "voc -s": "src/mnshExtTools.Mod",
-     "voc -s": "src/mnshTerm.Mod",
-     "voc -s": "src/mnshInput.Mod",
-     "voc -s": "src/vt100.Mod",
-     "voc -M": "src/manush.Mod"
+    "voc -s": "src/mnshList.Mod",
+    "voc -s": "src/mnshDefs.Mod",
+    "voc -s": "src/mnshStorage.Mod",
+    "voc -s": "src/mnshExtTools.Mod",
+    "voc -s": "src/mnshTerm.Mod",
+    "voc -s": "src/mnshInput.Mod",
+    "voc -s": "src/vt100.Mod",
+    "voc -M": "src/manush.Mod"
   }
 }
