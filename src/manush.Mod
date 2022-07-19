@@ -1,8 +1,8 @@
 MODULE manush;
 
 IMPORT Out, Strings, IntStr := oocIntStr,
-       crt, VT100, Platform, Args,
-       IO := ulmIO,
+       crt, VT100 := vt100, Platform, Args,
+       mnshInput, mnshTerm,
        skprJson, strutils, StringList, opts,
        mnshStorage, mnshDefs, mnshList, mnshExtTools;
 
@@ -19,6 +19,33 @@ CONST
   offsetX2 = 6;
   offsetX3 = 40;
   offsetX4 = 29;
+
+  msgWrongNumber = "wrong number... ";
+  msgEnterNumber = "enter number:   ";
+  msgConfigFile  = "config file ";
+  msgNotFound    = " not found!";
+  msgQuitting    = "quitting...";
+  msgNoConfProvided = "No configuration file provided, trying ";
+  msgNotValid    = " not valid, correct it!";
+
+  toggleViewKey = 'v';
+
+VAR
+  interrupted, wrong: BOOLEAN;
+
+PROCEDURE changeVerbosity(VAR v: LONGINT);
+BEGIN
+  INC(v);
+  IF v > verbosityLevel3 THEN v := verbosityLevel1 END
+END changeVerbosity;
+
+PROCEDURE processInterrupt(yofquest: INTEGER);
+BEGIN
+  crt.GotoXY(0, yofquest); crt.TextColor(crt.Red);
+  Out.String("interrupt caught.. "); crt.TextColor(crt.Yellow);
+  Out.String("ignoring"); Out.Ln;
+  interrupted := FALSE
+END processInterrupt;
 
 
 PROCEDURE AssignValues(VAR keys, values: StringList.TStringList; VAR ml: mnshList.mList);
@@ -97,7 +124,7 @@ BEGIN
       INC(i)
     UNTIL i = json.NonTerminalNumber;
   ELSE
-    Out.String("config file "); Out.String(cnf); Out.String(" not found!"); Out.Ln; Out.String("quitting..."); Out.Ln; HALT(1);
+    Out.String(msgConfigFile); Out.String(cnf); Out.String(msgNotFound); Out.Ln; Out.String(msgQuitting); Out.Ln; HALT(1);
   END;
   RETURN ml;
 END json2tree;
@@ -155,7 +182,7 @@ END showMenuOld; (* incomplete *)
 
 PROCEDURE exec(VAR cmd: StringList.pstring);
 VAR
-  s: ARRAY 3 OF CHAR;
+  ch: CHAR;
   i: INTEGER;
 BEGIN
   crt.ClrScr;
@@ -163,14 +190,16 @@ BEGIN
   crt.GotoXY(initX, initY);
   Out.Ln;
   i := Platform.System(cmd^);
-  crt.cursoron;
-  IO.ReadLine(s);
+  (*crt.cursoron;
+  ch := mnshInput.getChar();
   crt.ClrScr;
-  crt.GotoXY(initX, initY);
+  crt.GotoXY(initX, initY);*)
+  Out.Ln;
   Out.String("exit code of the program: "); Out.Int(i, 0); Out.Ln;
   Out.Ln; Out.String("press ENTER to continue"); 
   Out.Ln;
-  IO.ReadLine(s);
+  mnshTerm.StartV7Mode;
+  ch := mnshInput.getChar();
 END exec;
 
 PROCEDURE drawMenu(VAR ml: mnshList.mList; v: LONGINT): INTEGER;
@@ -240,30 +269,69 @@ BEGIN
   RETURN yofquest;
 END drawMenu;
 
+PROCEDURE ask(err: BOOLEAN; y: INTEGER);
+BEGIN
+  crt.GotoXY(0, y);
+  IF err THEN
+    crt.TextColor(crt.Red);
+    Out.String(msgWrongNumber); mnshTerm.StartV7Mode;
+    wrong := TRUE;
+    crt.GotoXY(Strings.Length(msgWrongNumber)+2, y);
+  END;
+  crt.TextColor(crt.Yellow);
+  Out.String(msgEnterNumber); Out.Ln;
+  mnshTerm.StartV7Mode;
+  crt.cursoroff
+END ask;
+
 PROCEDURE menu*(VAR ml: mnshList.mList; v: LONGINT);
 VAR
   yofquest: INTEGER;
-  choice: ARRAY 8 OF CHAR;
+  choice: CHAR;
+  choiceStr: ARRAY 3 OF CHAR;
   ci: LONGINT; res: IntStr.ConvResults;
   pcmd: StringList.pstring;
+  exitLoop: BOOLEAN;
+
+  PROCEDURE checkInterrupted;    
+  BEGIN  
+    IF interrupted THEN
+      yofquest := drawMenu(ml, v);
+      processInterrupt(yofquest)
+    END
+  END checkInterrupted;
+
 BEGIN
+  wrong := FALSE;
   REPEAT
     yofquest := drawMenu(ml, v);
-    (*crt.GotoXY(initX, yofquest); crt.TextColor(crt.Yellow);*)
-    crt.GotoXY(0, yofquest); crt.TextColor(crt.Yellow);
-    Out.Ln; 
-    Out.String("enter number:");
+    ask(wrong, yofquest);
     REPEAT
-      (*crt.GotoXY(offsetX4, yofquest);*)
+      mnshTerm.StartV7Mode;
+      wrong := FALSE;
+      exitLoop := TRUE;
+     (*crt.GotoXY(offsetX4, yofquest);*)
       crt.GotoXY(0, yofquest);
-      IO.ReadLine(choice);
-      IntStr.StrToInt(choice, ci, res);
-      IF (res # IntStr.strAllRight) OR (ci > ml.Count - 1) THEN
-        crt.GotoXY(0, yofquest); crt.TextColor(crt.Red);
-        Out.String("wrong number.. "); crt.TextColor(crt.Yellow);
-        Out.String("enter number:"); Out.Ln;
+      mnshTerm.StartV7Mode;
+      choice := mnshInput.getChar();
+      mnshTerm.StartV7Mode;
+      IF choice = toggleViewKey THEN
+        changeVerbosity(v);
+        yofquest := drawMenu(ml, v);
+        ask(wrong, yofquest);
+        exitLoop := FALSE
+      ELSE
+        choiceStr[0] := choice;
+        choiceStr[1] := 0X;
+        IntStr.StrToInt(choiceStr, ci, res);
+        IF (res # IntStr.strAllRight) OR (ci > ml.Count - 1) THEN
+          exitLoop := FALSE; wrong := TRUE; yofquest := drawMenu(ml, v); ask(wrong, yofquest)
+        ELSE
+          wrong := FALSE;
+          exitLoop := TRUE
+        END
       END;
-    UNTIL (res = IntStr.strAllRight) & (ci <= ml.Count -1);
+    UNTIL exitLoop & (res = IntStr.strAllRight) & (ci <= ml.Count -1);
     pcmd := mnshList.getCommand(ml, ci);
     IF ci # 0 THEN exec(pcmd) END
   UNTIL ci = 0;
@@ -276,6 +344,8 @@ BEGIN
   Out.String("if no configuration file provided, ");
   Out.String(defConf); Out.String(" will be used."); Out.Ln;
   Out.Ln;
+  Out.String("press 'v' to toggle verbosity level"); Out.Ln;
+  Out.Ln
 END showHelp;
 
 PROCEDURE main;
@@ -359,7 +429,7 @@ BEGIN
 
     IF opts.findOpt("-c", foptions) = NIL THEN
       Out.Ln;
-      Out.String("No configuration file provided, trying "); Out.String(defConf); Out.Ln;
+      Out.String(msgNoConfProvided); Out.String(defConf); Out.Ln;
       COPY(defConf, json)
     ELSE
       (*ml := json2tree(mnshDefs.iniFile);*)
@@ -370,12 +440,12 @@ BEGIN
   END;
 
     IF ~mnshStorage.exists(json) THEN
-      Out.String(json); Out.String(" is not found!"); Out.Ln;
+      Out.String(json); Out.String(msgNotFound); Out.Ln;
       HALT(3);
     ELSE
       st := mnshExtTools.check(json);
       IF st # 0 THEN
-        Out.String(json); Out.String(" is not valid, correct it!"); Out.Ln;
+        Out.String(json); Out.String(msgNotValid); Out.Ln;
         HALT(2);
       ELSE
         ml := json2tree(json);
@@ -384,9 +454,15 @@ BEGIN
     END
 END main;
 
+PROCEDURE interrupt(i: LONGINT);
 BEGIN
+  interrupted := TRUE;
+END interrupt;
 
-main;
-
+BEGIN
+  interrupted := FALSE;
+  Platform.SetInterruptHandler(interrupt);
+  main;
+  mnshTerm.StopV7Mode;
 
 END manush.
