@@ -209,6 +209,7 @@ VAR
   x, y, xofquest, yofquest: INTEGER;
 BEGIN
     x := initX; y := initY;
+    mnshCrt.TextBackground(mnshDefs.clrTxtBackground);
     mnshCrt.ClrScr; mnshCrt.cursoroff;
     mnshCrt.GotoXY(x,0);
     mnshCrt.TextColor(mnshDefs.clrDecoration);
