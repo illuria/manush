@@ -7,7 +7,7 @@ IMPORT Out, Strings, IntStr := oocIntStr,
        mnshStorage, mnshDefs, mnshList, mnshExtTools;
 
 CONST
-  defConf = "/usr/local/etc/manush/default.json";
+  defConf = mnshDefs.iniFile;
   verbosityLevel1 = 1;
   verbosityLevel2 = 2;
   verbosityLevel3 = 3;
