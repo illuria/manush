@@ -41,8 +41,8 @@ END changeVerbosity;
 
 PROCEDURE processInterrupt(yofquest: INTEGER);
 BEGIN
-  crt.GotoXY(0, yofquest); crt.TextColor(crt.Red);
-  Out.String("interrupt caught.. "); crt.TextColor(crt.Yellow);
+  crt.GotoXY(0, yofquest); crt.TextColor(mnshDefs.clrErr);
+  Out.String("interrupt caught.. "); crt.TextColor(mnshDefs.clrPrompt);
   Out.String("ignoring"); Out.Ln;
   interrupted := FALSE
 END processInterrupt;
@@ -211,28 +211,28 @@ BEGIN
     x := initX; y := initY;
     crt.ClrScr; crt.cursoroff;
     crt.GotoXY(x,0);
-    crt.TextColor(crt.Green);
+    crt.TextColor(mnshDefs.clrDecoration);
     Out.Ln; Out.Ln;
     Out.String("********************** ");
-    crt.TextColor(crt.LightMagenta); Out.String("manush friendly menu");
-    crt.TextColor(crt.Green); Out.String(" **********************"); 
+    crt.TextColor(mnshDefs.clrHeader); Out.String("manush friendly menu");
+    crt.TextColor(mnshDefs.clrDecoration); Out.String(" **********************"); 
     i := 0;
     REPEAT
       (* write option number *)
       crt.GotoXY(initX, y); 
-      crt.TextColor(crt.Blue);
+      crt.TextColor(mnshDefs.clrOptNum);
       Out.Int(i, 0); Out.Char(':'); 
       (* write option name *)
       pname := mnshList.getName(ml, i);
 
-      crt.GotoXY(offsetX, y); crt.TextColor(crt.Yellow);
+      crt.GotoXY(offsetX, y); crt.TextColor(mnshDefs.clrOption);
       Out.String(pname^); 
 
       IF v >= verbosityLevel2 THEN
         pcmnt := mnshList.getComment(ml, i);
 
         crt.GotoXY(offsetX3, y);
-        crt.TextBackground(crt.Black); crt.TextColor(crt.Blue);
+        crt.TextBackground(mnshDefs.clrTxtBackground); crt.TextColor(mnshDefs.clrOptDesc);
         Out.String(pcmnt^);
       END;
 
@@ -241,7 +241,7 @@ BEGIN
 
         INC(y, 2); 
         crt.GotoXY(offsetX2, y);
-        crt.TextBackground(crt.DarkGray); crt.TextColor(crt.Green);
+        crt.TextBackground(mnshDefs.clrTxtBackgroundStressed); crt.TextColor(mnshDefs.clrOptCommand);
         Out.String(pcmd^)
       END;
 
@@ -250,19 +250,19 @@ BEGIN
     UNTIL i = ml.Count;
     
     (*INC(y); yofquest := y;
-    crt.GotoXY(initX, yofquest); crt.TextColor(crt.Yellow);
+    crt.GotoXY(initX, yofquest); crt.TextColor(mnshDefs.clrPrompt);
     Out.String("enter number:");*)
 
     INC(y); INC(y);
-    crt.GotoXY(offsetX0, y); crt.TextColor(crt.Green);
+    crt.GotoXY(offsetX0, y); crt.TextColor(mnshDefs.clrDecoration);
     Out.String("******************************************************************");
     Out.Ln; Out.Ln;
     
     INC(y); yofquest := y;
-    crt.GotoXY(initX, yofquest); crt.TextColor(crt.Yellow);
+    crt.GotoXY(initX, yofquest); crt.TextColor(mnshDefs.clrPrompt);
     Out.String("enter number:");
 
-    crt.TextColor(crt.Blue);
+    crt.TextColor(mnshDefs.clrOptDesc);
     crt.cursoron;
 
     yofquest := y;
@@ -273,12 +273,12 @@ PROCEDURE ask(err: BOOLEAN; y: INTEGER);
 BEGIN
   crt.GotoXY(0, y);
   IF err THEN
-    crt.TextColor(crt.Red);
+    crt.TextColor(mnshDefs.clrErr);
     Out.String(msgWrongNumber); mnshTerm.StartV7Mode;
     wrong := TRUE;
     crt.GotoXY(Strings.Length(msgWrongNumber)+2, y);
   END;
-  crt.TextColor(crt.Yellow);
+  crt.TextColor(mnshDefs.clrPrompt);
   Out.String(msgEnterNumber); Out.Ln;
   mnshTerm.StartV7Mode;
   crt.cursoroff
