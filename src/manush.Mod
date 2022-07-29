@@ -1,7 +1,7 @@
 MODULE manush;
 
 IMPORT Out, Strings, IntStr := oocIntStr,
-       crt, VT100 := vt100, Platform, Args,
+       mnshCrt, VT100, Platform, Args,
        mnshInput, mnshTerm,
        skprJson, strutils, StringList, opts,
        mnshStorage, mnshDefs, mnshList, mnshExtTools;
@@ -41,8 +41,8 @@ END changeVerbosity;
 
 PROCEDURE processInterrupt(yofquest: INTEGER);
 BEGIN
-  crt.GotoXY(0, yofquest); crt.TextColor(mnshDefs.clrErr);
-  Out.String("interrupt caught.. "); crt.TextColor(mnshDefs.clrPrompt);
+  mnshCrt.GotoXY(0, yofquest); mnshCrt.TextColor(mnshDefs.clrErr);
+  Out.String("interrupt caught.. "); mnshCrt.TextColor(mnshDefs.clrPrompt);
   Out.String("ignoring"); Out.Ln;
   interrupted := FALSE
 END processInterrupt;
@@ -185,15 +185,15 @@ VAR
   ch: CHAR;
   i: INTEGER;
 BEGIN
-  crt.ClrScr;
-  crt.cursoroff;
-  crt.GotoXY(initX, initY);
+  mnshCrt.ClrScr;
+  mnshCrt.cursoroff;
+  mnshCrt.GotoXY(initX, initY);
   Out.Ln;
   i := Platform.System(cmd^);
-  (*crt.cursoron;
+  (*mnshCrt.cursoron;
   ch := mnshInput.getChar();
-  crt.ClrScr;
-  crt.GotoXY(initX, initY);*)
+  mnshCrt.ClrScr;
+  mnshCrt.GotoXY(initX, initY);*)
   Out.Ln;
   Out.String("exit code of the program: "); Out.Int(i, 0); Out.Ln;
   Out.Ln; Out.String("press ENTER to continue"); 
@@ -209,30 +209,30 @@ VAR
   x, y, xofquest, yofquest: INTEGER;
 BEGIN
     x := initX; y := initY;
-    crt.ClrScr; crt.cursoroff;
-    crt.GotoXY(x,0);
-    crt.TextColor(mnshDefs.clrDecoration);
+    mnshCrt.ClrScr; mnshCrt.cursoroff;
+    mnshCrt.GotoXY(x,0);
+    mnshCrt.TextColor(mnshDefs.clrDecoration);
     Out.Ln; Out.Ln;
     Out.String("********************** ");
-    crt.TextColor(mnshDefs.clrHeader); Out.String("manush friendly menu");
-    crt.TextColor(mnshDefs.clrDecoration); Out.String(" **********************"); 
+    mnshCrt.TextColor(mnshDefs.clrHeader); Out.String("manush friendly menu");
+    mnshCrt.TextColor(mnshDefs.clrDecoration); Out.String(" **********************"); 
     i := 0;
     REPEAT
       (* write option number *)
-      crt.GotoXY(initX, y); 
-      crt.TextColor(mnshDefs.clrOptNum);
+      mnshCrt.GotoXY(initX, y); 
+      mnshCrt.TextColor(mnshDefs.clrOptNum);
       Out.Int(i, 0); Out.Char(':'); 
       (* write option name *)
       pname := mnshList.getName(ml, i);
 
-      crt.GotoXY(offsetX, y); crt.TextColor(mnshDefs.clrOption);
+      mnshCrt.GotoXY(offsetX, y); mnshCrt.TextColor(mnshDefs.clrOption);
       Out.String(pname^); 
 
       IF v >= verbosityLevel2 THEN
         pcmnt := mnshList.getComment(ml, i);
 
-        crt.GotoXY(offsetX3, y);
-        crt.TextBackground(mnshDefs.clrTxtBackground); crt.TextColor(mnshDefs.clrOptDesc);
+        mnshCrt.GotoXY(offsetX3, y);
+        mnshCrt.TextBackground(mnshDefs.clrTxtBackground); mnshCrt.TextColor(mnshDefs.clrOptDesc);
         Out.String(pcmnt^);
       END;
 
@@ -240,10 +240,10 @@ BEGIN
         pcmd := mnshList.getCommand(ml, i);
 
         INC(y, 2); 
-        crt.GotoXY(offsetX2, y);
-        crt.TextBackground(mnshDefs.clrTxtBackgroundStressed); crt.TextColor(mnshDefs.clrOptCommand);
+        mnshCrt.GotoXY(offsetX2, y);
+        mnshCrt.TextBackground(mnshDefs.clrTxtBackgroundStressed); mnshCrt.TextColor(mnshDefs.clrOptCommand);
         Out.String(pcmd^);
-        crt.TextBackground(mnshDefs.clrTxtBackground) 
+        mnshCrt.TextBackground(mnshDefs.clrTxtBackground) 
       END;
 
       INC(y); 
@@ -251,20 +251,20 @@ BEGIN
     UNTIL i = ml.Count;
     
     (*INC(y); yofquest := y;
-    crt.GotoXY(initX, yofquest); crt.TextColor(mnshDefs.clrPrompt);
+    mnshCrt.GotoXY(initX, yofquest); mnshCrt.TextColor(mnshDefs.clrPrompt);
     Out.String("enter number:");*)
 
     INC(y); INC(y);
-    crt.GotoXY(offsetX0, y); crt.TextColor(mnshDefs.clrDecoration);
+    mnshCrt.GotoXY(offsetX0, y); mnshCrt.TextColor(mnshDefs.clrDecoration);
     Out.String("******************************************************************");
     Out.Ln; Out.Ln;
     
     INC(y); yofquest := y;
-    crt.GotoXY(initX, yofquest); crt.TextColor(mnshDefs.clrPrompt);
+    mnshCrt.GotoXY(initX, yofquest); mnshCrt.TextColor(mnshDefs.clrPrompt);
     Out.String("enter number:");
 
-    crt.TextColor(mnshDefs.clrOptDesc);
-    crt.cursoron;
+    mnshCrt.TextColor(mnshDefs.clrOptDesc);
+    mnshCrt.cursoron;
 
     yofquest := y;
   RETURN yofquest;
@@ -272,17 +272,17 @@ END drawMenu;
 
 PROCEDURE ask(err: BOOLEAN; y: INTEGER);
 BEGIN
-  crt.GotoXY(0, y);
+  mnshCrt.GotoXY(0, y);
   IF err THEN
-    crt.TextColor(mnshDefs.clrErr);
+    mnshCrt.TextColor(mnshDefs.clrErr);
     Out.String(msgWrongNumber); mnshTerm.StartV7Mode;
     wrong := TRUE;
-    crt.GotoXY(Strings.Length(msgWrongNumber)+2, y);
+    mnshCrt.GotoXY(Strings.Length(msgWrongNumber)+2, y);
   END;
-  crt.TextColor(mnshDefs.clrPrompt);
+  mnshCrt.TextColor(mnshDefs.clrPrompt);
   Out.String(msgEnterNumber); Out.Ln;
   mnshTerm.StartV7Mode;
-  crt.cursoroff
+  mnshCrt.cursoroff
 END ask;
 
 PROCEDURE menu*(VAR ml: mnshList.mList; v: LONGINT);
@@ -311,8 +311,8 @@ BEGIN
       mnshTerm.StartV7Mode;
       wrong := FALSE;
       exitLoop := TRUE;
-     (*crt.GotoXY(offsetX4, yofquest);*)
-      crt.GotoXY(0, yofquest);
+     (*mnshCrt.GotoXY(offsetX4, yofquest);*)
+      mnshCrt.GotoXY(0, yofquest);
       mnshTerm.StartV7Mode;
       choice := mnshInput.getChar();
       mnshTerm.StartV7Mode;

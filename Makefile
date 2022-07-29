@@ -25,12 +25,12 @@ all: ${DEPS}
 			${ROOTDIR}/build/;               \
 	done
 	@cd build; voc -s  ${ROOTDIR}/../src/mnshList.Mod     \
+			   ${ROOTDIR}/../src/mnshCrt.Mod      \
 			   ${ROOTDIR}/../src/mnshDefs.Mod     \
 			   ${ROOTDIR}/../src/mnshStorage.Mod  \
 			   ${ROOTDIR}/../src/mnshExtTools.Mod \
 			   ${ROOTDIR}/../src/mnshInput.Mod    \
 			   ${ROOTDIR}/../src/mnshTerm.Mod     \
-			   ${ROOTDIR}/../src/vt100.Mod        \
 			   ${ROOTDIR}/../src/manush.Mod -M
 
 ${DEPS}:
