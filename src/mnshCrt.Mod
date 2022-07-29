@@ -46,6 +46,11 @@ CONST
 (* Add-in for blinking *)
    Blink*         = 128;
 
+   PROCEDURE Reset*;
+   BEGIN
+     VT100.Reset
+   END Reset;
+
    PROCEDURE EraseDisplay*;
    BEGIN
       VT100.ED(2);
