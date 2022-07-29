@@ -11,7 +11,7 @@ CONST
   clrOptDesc*               = crt.Blue;
   clrOptCommand*            = crt.Green;
   clrTxtBackground*         = crt.Black;
-  clrTxtBackgroundStressed* = crt.Black;
-  iniFile* = "/etc/manush.json";
+  clrTxtBackgroundStressed* = crt.DarkGray;
+  iniFile* = "/usr/local/etc/manush/default.json";
   cmds* = "Commands";
 END mnshDefs.

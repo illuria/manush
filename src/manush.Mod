@@ -242,7 +242,8 @@ BEGIN
         INC(y, 2); 
         crt.GotoXY(offsetX2, y);
         crt.TextBackground(mnshDefs.clrTxtBackgroundStressed); crt.TextColor(mnshDefs.clrOptCommand);
-        Out.String(pcmd^)
+        Out.String(pcmd^);
+        crt.TextBackground(mnshDefs.clrTxtBackground) 
       END;
 
       INC(y); 
