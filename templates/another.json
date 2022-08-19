@@ -3,6 +3,7 @@
     {
       "name": "Displays Top Processes",
       "exec": "top",
+      "exitstatus": "false",
       "cmnt": "Run the `top' Utility"
     },
 "ls":

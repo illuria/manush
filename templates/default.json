@@ -11,16 +11,17 @@
       "exec": "service nginx restart",
       "cmnt": "Restart NGINX Server"
     },
-"reboot":
+"list":
     {
-      "name": "Reboot",
-      "exec": "shutdown -r now",
-      "cmnt": "Reboot the Machine!"
+      "name": "ls",
+      "exec": "ls -al",
+      "cmnt": "ls -al"
     },
 "shell":
     {
       "name": "Shell",
       "exec": "/bin/sh",
+      "exitstatus": "false",
       "cmnt": "POSIX Shell"
     }
 }

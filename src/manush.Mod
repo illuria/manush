@@ -47,12 +47,11 @@ BEGIN
   interrupted := FALSE
 END processInterrupt;
 
-
 PROCEDURE AssignValues(VAR keys, values: StringList.TStringList; VAR ml: mnshList.mList);
 VAR
   ek, ev: StringList.Node;
   i: INTEGER;
-  VAR name, exec, comment: StringList.pstring;
+  VAR name, exec, comment, exitstatus: StringList.pstring;
 BEGIN
 i := 0;
   REPEAT
@@ -71,20 +70,25 @@ i := 0;
       comment := ev.obj(StringList.TString).str;
     Out.Int(i, 0); Out.String(" found comment: "); Out.String(comment^); Out.Ln;
     END;
-    INC(i);
+    IF Strings.Match(ek.obj(StringList.TString).str^, mnshList.exitStatusField) THEN
+      exitstatus := ev.obj(StringList.TString).str;
+    Out.Int(i, 0); Out.String(" found exitstatus: "); Out.String(exitstatus^); Out.Ln;
+    END;
+INC(i);
   UNTIL i = keys.Count - 1;
   (*ml.appendNode(ml, name^, exec^, comment^);*)
-  ml.appendNodeByPointers(ml, name, exec, comment);
+  ml.appendNodeByPointers(ml, name, exec, comment, exitstatus);
 END AssignValues;
 
 PROCEDURE assignZeroOption(VAR ml: mnshList.mList);
 VAR
-  name, command, comment: StringList.pstring;
+  name, command, comment, exitstatus: StringList.pstring;
 BEGIN
   StringList.pstringFromString("Exit", name);
   StringList.pstringFromString("(internal)", command);
   StringList.pstringFromString("Exit This Menu", comment);
-  ml.appendNodeByPointers(ml, name, command, comment);
+  StringList.pstringFromString("false", exitstatus);
+  ml.appendNodeByPointers(ml, name, command, comment, exitstatus);
 END assignZeroOption;
 
 PROCEDURE json2tree(VAR cnf: ARRAY OF CHAR): mnshList.mList;
@@ -180,32 +184,58 @@ BEGIN
   UNTIL i = ml.Count;
 END showMenuOld; (* incomplete *)
 
-PROCEDURE exec(VAR cmd: StringList.pstring);
+PROCEDURE showExitStatus(VAR ml: mnshList.mList; ci: LONGINT): BOOLEAN;
+VAR
+  whitespace: CHAR;
+  est, pcmd : StringList.pstring;
+  tmp : strutils.pstring;
+  b, show : BOOLEAN;
+BEGIN
+  whitespace := 20X;
+  est  := mnshList.getExitStatus(ml, ci);
+  show := TRUE;
+  IF (est # NIL) & (est^ = "false") THEN show := FALSE END;
+ 
+  pcmd := mnshList.getCommand(ml, ci);
+  tmp := strutils.ExtractWord(1, pcmd^, whitespace);
+  IF tmp # NIL THEN
+    IF tmp^ = "manush" THEN show := FALSE END;
+  END;
+  RETURN show
+END showExitStatus;
+
+PROCEDURE exec(VAR ml: mnshList.mList; ci: LONGINT);
 VAR
   ch: CHAR;
   i: INTEGER;
+  pcmd : StringList.pstring;
+  est  : StringList.pstring;
+  show : BOOLEAN;
 BEGIN
+  pcmd := mnshList.getCommand(ml, ci);
+
+  mnshCrt.Reset;
   mnshCrt.ClrScr;
-  mnshCrt.cursoroff;
+  (*mnshCrt.cursoroff;*) (* TODO, shell doesn't show chars now *)
   mnshCrt.GotoXY(initX, initY);
   Out.Ln;
-  i := Platform.System(cmd^);
-  (*mnshCrt.cursoron;
-  ch := mnshInput.getChar();
-  mnshCrt.ClrScr;
-  mnshCrt.GotoXY(initX, initY);*)
-  Out.Ln;
-  Out.String("exit code of the program: "); Out.Int(i, 0); Out.Ln;
-  Out.Ln; Out.String("press ENTER to continue"); 
-  Out.Ln;
-  mnshTerm.StartV7Mode;
-  ch := mnshInput.getChar();
+  i := Platform.System(pcmd^);
+
+  IF showExitStatus(ml, ci) THEN
+    Out.Ln;
+    Out.String("exit code of the program: "); Out.Int(i, 0); Out.Ln;
+    Out.Ln; Out.String("press ENTER to continue"); 
+    Out.Ln;
+
+    mnshTerm.StartV7Mode;
+    ch := mnshInput.getChar();
+  END
 END exec;
 
 PROCEDURE drawMenu(VAR ml: mnshList.mList; v: LONGINT): INTEGER;
 VAR
   i: LONGINT;
-  pname, pcmd, pcmnt: StringList.pstring;
+  pname, pcmd, pcmnt, pestatus: StringList.pstring;
   x, y, xofquest, yofquest: INTEGER;
 BEGIN
     x := initX; y := initY;
@@ -225,9 +255,10 @@ BEGIN
       Out.Int(i, 0); Out.Char(':'); 
       (* write option name *)
       pname := mnshList.getName(ml, i);
-
       mnshCrt.GotoXY(offsetX, y); mnshCrt.TextColor(mnshDefs.clrOption);
       Out.String(pname^); 
+
+      (*pestatus := mnshList.getExitStatus(ml, i);*)
 
       IF v >= verbosityLevel2 THEN
         pcmnt := mnshList.getComment(ml, i);
@@ -292,7 +323,6 @@ VAR
   choice: CHAR;
   choiceStr: ARRAY 3 OF CHAR;
   ci: LONGINT; res: IntStr.ConvResults;
-  pcmd: StringList.pstring;
   exitLoop: BOOLEAN;
 
   PROCEDURE checkInterrupted;    
@@ -334,8 +364,7 @@ BEGIN
         END
       END;
     UNTIL exitLoop & (res = IntStr.strAllRight) & (ci <= ml.Count -1);
-    pcmd := mnshList.getCommand(ml, ci);
-    IF ci # 0 THEN exec(pcmd) END
+    IF ci # 0 THEN exec(ml, ci) END
   UNTIL ci = 0;
   mnshCrt.Reset
 END menu;

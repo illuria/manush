@@ -61,6 +61,7 @@ It looks like this:
     {
       "name": "Shell",
       "exec": "/bin/sh",
+      "exitstatus": "false",
       "cmnt": "POSIX Shell"
     }
 }
@@ -69,3 +70,8 @@ It looks like this:
 manush will always insert an `exit` command (internal) at the top of the menu.
 
 Pro tip: you can have `manush /path/to/other_configuration_file.json` as one of the options, thus you may create menus with unlimited depth! (:
+
+by default after the commnad execution, manush will show the exit status.
+however, this option is configurable by json's "exitstatus" key.
+
+it also won't show you the exit status if the program executed was another instance of manush.
