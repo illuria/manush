@@ -199,7 +199,8 @@ BEGIN
   pcmd := mnshList.getCommand(ml, ci);
   tmp := strutils.ExtractWord(1, pcmd^, whitespace);
   IF tmp # NIL THEN
-    IF tmp^ = "manush" THEN show := FALSE END;
+    (*IF tmp^ = "manush" THEN show := FALSE END;*)
+    IF strutils.contains1(tmp^, "manush") THEN show := FALSE END
   END;
   RETURN show
 END showExitStatus;
