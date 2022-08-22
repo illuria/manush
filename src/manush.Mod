@@ -214,7 +214,7 @@ VAR
   show : BOOLEAN;
 BEGIN
   pcmd := mnshList.getCommand(ml, ci);
-
+  mnshTerm.StopV7Mode;
   mnshCrt.Reset;
   mnshCrt.ClrScr;
   (*mnshCrt.cursoroff;*) (* TODO, shell doesn't show chars now *)
