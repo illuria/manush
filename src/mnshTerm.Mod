@@ -11,6 +11,7 @@ CONST
   cmdFixErase = "stty erase ^h";
   delay = 10;
 
+
 PROCEDURE StartV7Mode*;
 VAR
   i: INTEGER;

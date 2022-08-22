@@ -1,0 +1,17 @@
+{
+  "Package": "pipes",
+  "Author":  "noch",
+  "License": "GPL-3",
+  "Version": "0.1",
+  "Remote":
+    {
+    "type": "git",
+    "path": "https://github.com/norayr/pipes",
+    "tag" : "0.1"
+    },
+  "Build":
+    {
+     "voc -s": "src/pipes.Mod",
+     "voc -m": "src/testPipes.Mod"
+    }
+}

@@ -7,7 +7,8 @@ DEPS     = norayr/lists      \
 	   norayr/opts       \
 	   norayr/time       \
 	   norayr/skprLogger \
-	   norayr/skprJson
+	   norayr/skprJson   \
+	   norayr/pipes
 
 GITHUB   = https://github.com/
 
@@ -31,6 +32,7 @@ all: ${DEPS}
 			   ${ROOTDIR}/../src/mnshExtTools.Mod \
 			   ${ROOTDIR}/../src/mnshInput.Mod    \
 			   ${ROOTDIR}/../src/mnshTerm.Mod     \
+			   ${ROOTDIR}/../src/mnshUnix.Mod     \
 			   ${ROOTDIR}/../src/manush.Mod -M
 
 ${DEPS}:

@@ -1,10 +1,10 @@
 MODULE manush;
 
 IMPORT Out, Strings, IntStr := oocIntStr,
-       mnshCrt, Platform, Args,
+       mnshCrt, Platform,
        mnshInput, mnshTerm,
-       skprJson, strutils, StringList, opts,
-       mnshStorage, mnshDefs, mnshList, mnshExtTools;
+       skprJson, strutils, StringList, opts, pipes,
+       mnshStorage, mnshDefs, mnshList, mnshExtTools, mnshUnix;
 
 CONST
   defConf = mnshDefs.iniFile;
@@ -83,10 +83,34 @@ END AssignValues;
 PROCEDURE assignZeroOption(VAR ml: mnshList.mList);
 VAR
   name, command, comment, exitstatus: StringList.pstring;
+  pid, ppid: LONGINT;
+  parent : ARRAY 32 OF CHAR;
+  l: LONGINT;
 BEGIN
-  StringList.pstringFromString("Exit", name);
+  pid := mnshUnix.getPPid();
+    Out.String("ppid="); Out.Int(pid, 0); Out.Ln;
+  (*ppid := mnshExtTools.getPPIDbyPID(pid);
+    Out.String("ppid="); Out.Int(ppid, 0); Out.Ln;*)
+  l := mnshExtTools.getNameByPID(pid, parent); 
+  Out.String("parent="); Out.String(parent); Out.Ln;
+  strutils.dumpChars(parent); Out.Ln;
+  IF l # 0 THEN
+    Out.String("popen() failed, hmmm..."); Out.Ln;
+    Out.String("but it is still possible to continue..."); Out.Ln;
+    Out.String("waiting 5 secs to make you notice the warning..."); Out.Ln;
+    HALT(5);
+  ELSE
+    IF strutils.contains1(parent, "manush") THEN
+      Out.String("assigning baaack"); Out.Ln;
+      StringList.pstringFromString("Back", name);
+      StringList.pstringFromString("Back to previous menu", comment);
+    ELSE
+      Out.String("assigning exit"); Out.Ln;
+      StringList.pstringFromString("Exit", name);
+      StringList.pstringFromString("Exit this menu", comment);
+    END;
+  END;
   StringList.pstringFromString("(internal)", command);
-  StringList.pstringFromString("Exit This Menu", comment);
   StringList.pstringFromString("false", exitstatus);
   ml.appendNodeByPointers(ml, name, command, comment, exitstatus);
 END assignZeroOption;
@@ -208,26 +232,56 @@ END showExitStatus;
 PROCEDURE exec(VAR ml: mnshList.mList; ci: LONGINT);
 VAR
   ch: CHAR;
-  i: INTEGER;
+  i: LONGINT;
   pcmd : StringList.pstring;
   est  : StringList.pstring;
+  args : StringList.pstrings;
   show : BOOLEAN;
+  (*ptxt : pipes.Text;*)
 BEGIN
   pcmd := mnshList.getCommand(ml, ci);
   mnshTerm.StopV7Mode;
   mnshCrt.Reset;
   mnshCrt.ClrScr;
-  (*mnshCrt.cursoroff;*) (* TODO, shell doesn't show chars now *)
   mnshCrt.GotoXY(initX, initY);
   Out.Ln;
   i := Platform.System(pcmd^);
 
+(* comment shows how to do the same with popen 
+  ch := 'r'; ptxt := pipes.Popen(pcmd^, ch);
+  WHILE ~ ptxt.eof DO
+    pipes.Read(ptxt, ch);
+  END;
+  i := pipes.Pclose (ptxt);
+*)
+(* comment shows how to do the same with fork
+   but not recommended, because forked process has no stdin/terminal
+  i := mnshUnix.Fork();
+  IF i < 0 THEN
+    Out.String("error on fork()"); Out.Ln;
+    HALT(1);
+  ELSIF i = 0 THEN
+    Out.String("forked ok, i am the child"); Out.Ln;
+    args := strutils.tokenize(pcmd^, ' ');
+    i := mnshUnix.Execvp(args[0]^, args)
+  ELSE
+    mnshUnix.waitPID(i);
+    IF showExitStatus(ml, ci) THEN
+      Out.Ln;
+      Out.String("exit code of the program: "); Out.Int(i, 0); Out.Ln;
+      Out.Ln; Out.String("press ENTER to continue"); 
+      Out.Ln;
+
+      mnshTerm.StartV7Mode;
+      ch := mnshInput.getChar();
+    END
+  END;
+*)
   IF showExitStatus(ml, ci) THEN
     Out.Ln;
     Out.String("exit code of the program: "); Out.Int(i, 0); Out.Ln;
     Out.Ln; Out.String("press ENTER to continue"); 
     Out.Ln;
-
     mnshTerm.StartV7Mode;
     ch := mnshInput.getChar();
   END
