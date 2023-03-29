@@ -13,7 +13,7 @@ Each option represents a command to run.
 
 There are two ways to build manush.
 
-First is by using vipack package manager. Therefore, the prerequisites are voc (vishap oberon compiler) and vipack (vishap package manager).
+First is by using vipack package manager. Therefore, the prerequisites are [voc](https://github.com/vishaps/voc) (vishap oberon compiler) and [vipack](https://github.com/vishaps/vipack) (vishap package manager).
 
 Issue the following command in manush's directory:
 
