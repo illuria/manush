@@ -12,18 +12,21 @@
   },
   "Dependencies":
   {
+    "lists": "0.1",
     "opts": "0.1",
+    "pipes": "0.1",
     "skprJson": "0.1"
   },
   "Build":
   {
     "voc -s": "src/mnshList.Mod",
+    "voc -s": "src/mnshUnix.Mod",
     "voc -s": "src/mnshDefs.Mod",
+    "voc -s": "src/mnshCrt.Mod",
     "voc -s": "src/mnshStorage.Mod",
     "voc -s": "src/mnshExtTools.Mod",
     "voc -s": "src/mnshTerm.Mod",
     "voc -s": "src/mnshInput.Mod",
-    "voc -s": "src/vt100.Mod",
     "voc -M": "src/manush.Mod"
   }
 }

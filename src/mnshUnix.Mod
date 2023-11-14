@@ -1,12 +1,12 @@
 MODULE mnshUnix;
-IMPORT SYSTEM, strutils, Out;
+IMPORT SYSTEM, strUtils, Out;
 TYPE
     (*
     ArgPtr* = POINTER TO ARRAY 1024 OF CHAR;
     ArgVec* = POINTER TO ARRAY 1024 OF ArgPtr;
     *)
-    ArgPtr* = strutils.pstring;
-    ArgVec* = strutils.pstrings;
+    ArgPtr* = strUtils.pstring;
+    ArgVec* = strUtils.pstrings;
 
 PROCEDURE -Aincludeunistd   '#include <unistd.h>';
 PROCEDURE -Aincludewait   '#include <sys/wait.h>';
@@ -17,7 +17,7 @@ PROCEDURE -getppid(): LONGINT   "(LONGINT)getppid()";
 PROCEDURE -fork(): LONGINT   "(LONGINT)fork()";
 
 PROCEDURE -execvp(VAR file: ARRAY [1] OF CHAR; args: ArgVec): LONGINT
-  "(LONGINT)execvp(file, args)";
+  "(LONGINT)execvp(file,(char *const *) args)";
 
 PROCEDURE -waitpid(pid: LONGINT; VAR wstatus: LONGINT; options: LONGINT): LONGINT
   "waitpid (pid, wstatus, options)";

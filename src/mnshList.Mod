@@ -2,7 +2,7 @@ MODULE mnshList; (* noch 2022-01 / 2022-02-17  list to keep menu options *)
 
 
 
-IMPORT Out, Strings, List, lDefs, strutils, StringList;
+IMPORT Out, Strings, List, StringList;
 
 CONST
   nameField* = "name";
@@ -12,7 +12,7 @@ CONST
 
 TYPE
   mNode* = POINTER TO mNodeDesc;
-  mNodeDesc = RECORD(lDefs.TObjectDesc)
+  mNodeDesc = RECORD(List.TObjectDesc)
        name, exec, comment, exitstatus : StringList.pstring;
   END;
 

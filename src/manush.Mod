@@ -3,7 +3,7 @@ MODULE manush;
 IMPORT Out, Strings, IntStr := oocIntStr,
        mnshCrt, Platform,
        mnshInput, mnshTerm,
-       skprJson, strutils, StringList, opts, pipes,
+       skprJson, strUtils, StringList, opts, pipes,
        mnshStorage, mnshDefs, mnshList, mnshExtTools, mnshUnix;
 
 CONST
@@ -93,14 +93,14 @@ BEGIN
     Out.String("ppid="); Out.Int(ppid, 0); Out.Ln;*)
   l := mnshExtTools.getNameByPID(pid, parent); 
   Out.String("parent="); Out.String(parent); Out.Ln;
-  strutils.dumpChars(parent); Out.Ln;
+  strUtils.dumpChars(parent); Out.Ln;
   IF l # 0 THEN
     Out.String("popen() failed, hmmm..."); Out.Ln;
     Out.String("but it is still possible to continue..."); Out.Ln;
     Out.String("waiting 5 secs to make you notice the warning..."); Out.Ln;
     HALT(5);
   ELSE
-    IF strutils.contains1(parent, "manush") THEN
+    IF strUtils.contains1(parent, "manush") THEN
       Out.String("assigning baaack"); Out.Ln;
       StringList.pstringFromString("Back", name);
       StringList.pstringFromString("Back to previous menu", comment);
@@ -118,7 +118,7 @@ END assignZeroOption;
 PROCEDURE json2tree(VAR cnf: ARRAY OF CHAR): mnshList.mList;
 VAR
   json, item : skprJson.JsonTypePointer;
-  p: strutils.pstring;
+  p: strUtils.pstring;
   keys, values: StringList.TStringList;
   strs: POINTER TO ARRAY OF skprJson.TString;
   ml: mnshList.mList;
@@ -159,7 +159,7 @@ END json2tree;
 
 PROCEDURE smth(jFileName: ARRAY OF CHAR; VAR ml: mnshList.mList);
 VAR
-  p: strutils.pstring;
+  p: strUtils.pstring;
   jsonRecord, item: skprJson.JsonTypePointer;
   keys, values: StringList.TStringList;
   b: BOOLEAN;
@@ -212,7 +212,7 @@ PROCEDURE showExitStatus(VAR ml: mnshList.mList; ci: LONGINT): BOOLEAN;
 VAR
   whitespace: CHAR;
   est, pcmd : StringList.pstring;
-  tmp : strutils.pstring;
+  tmp : strUtils.pstring;
   b, show : BOOLEAN;
 BEGIN
   whitespace := 20X;
@@ -221,10 +221,10 @@ BEGIN
   IF (est # NIL) & (est^ = "false") THEN show := FALSE END;
  
   pcmd := mnshList.getCommand(ml, ci);
-  tmp := strutils.ExtractWord(1, pcmd^, whitespace);
+  tmp := strUtils.ExtractWord(1, pcmd^, whitespace);
   IF tmp # NIL THEN
     (*IF tmp^ = "manush" THEN show := FALSE END;*)
-    IF strutils.contains1(tmp^, "manush") THEN show := FALSE END
+    IF strUtils.contains1(tmp^, "manush") THEN show := FALSE END
   END;
   RETURN show
 END showExitStatus;
@@ -262,7 +262,7 @@ BEGIN
     HALT(1);
   ELSIF i = 0 THEN
     Out.String("forked ok, i am the child"); Out.Ln;
-    args := strutils.tokenize(pcmd^, ' ');
+    args := strUtils.tokenize(pcmd^, ' ');
     i := mnshUnix.Execvp(args[0]^, args)
   ELSE
     mnshUnix.waitPID(i);
